@@ -6,23 +6,27 @@ function App() {
 
 
   return (
-    <div>
-      <Header/>
-      <Picker
-        onChange={() => {}}
-        label="source"
-        value="/"
-        directoryOnly={false}
-      />
-      <Picker
-        onChange={() => {}}
-        label="destination"
-        value="/"
-        directoryOnly={true}
-      />
-      <Queue
-        items={[]}
-      />
+    <div className="container mx-auto">
+        <Header/>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Picker
+            onChange={() => {}}
+            label="source"
+            value="/"
+            directoryOnly={false}
+          />
+          <Picker
+            onChange={() => {}}
+            label="destination"
+            value="/"
+            directoryOnly={true}
+          />
+        </div>
+        <Queue
+          items={[]}
+        />
+      </div>
     </div>
 
   );

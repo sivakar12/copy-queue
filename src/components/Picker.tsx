@@ -8,8 +8,7 @@ export type PickerProps = {
 export default function Picker({ onChange, directoryOnly, value, label }: PickerProps) {
     return (
         <div>
-            <h1>Picker</h1>
-            <h2>Select {label}</h2>
+            <h1 className="text-2xl font-bold mb-4">Select {label}</h1>
         </div>
     );
 }

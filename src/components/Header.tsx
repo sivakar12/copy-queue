@@ -1,7 +1,5 @@
 export default function Header() {
     return (
-        <header>
-            <h1>Copy Queue</h1>
-        </header>
+        <h1 className="text-4xl font-bold mb-4">Copy Queue</h1>
     );
 }
