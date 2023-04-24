@@ -1,11 +1,4 @@
-
-type QueueItem = {
-    id: string;
-    source: string;
-    destination: string;
-    totalBytes: number;
-    bytesCopied: number;
-};
+import { QueueItem } from "../App";
 
 type QueueProps = {
     items: QueueItem[];
