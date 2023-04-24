@@ -6,28 +6,31 @@ import Queue from "./components/Queue";
 import { useEffect, useState } from 'react';
 
 function App() {
-  const [homeFolder, setHomeFolder] = useState<string>('/')
-  
-  useEffect(() => {}, [
+  const [sourcePath, setSourcePath] = useState<string>('/')
+  const [destinationPath, setDestinationPath] = useState<string>('/')
+
+  useEffect(() => {
     invoke<string>('get_home_folder_path').then(path => {
-      setHomeFolder(path)
+      setSourcePath(path)
+      setDestinationPath(path)
     })
-  ])
+  }, [])
+
   return (
     <div className="container mx-auto">
         <Header/>
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Picker
-            onChange={() => {}}
+            onChange={setSourcePath}
             label="source"
-            value={homeFolder}
+            currentPath={sourcePath}
             directoryOnly={false}
           />
           <Picker
-            onChange={() => {}}
+            onChange={setDestinationPath}
             label="destination"
-            value={homeFolder}
+            currentPath={destinationPath}
             directoryOnly={true}
           />
         </div>

@@ -12,9 +12,10 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 struct FolderItem {
     name: String,
-    is_dir: bool,
+    is_folder: bool,
 }
 
 #[tauri::command]
@@ -33,11 +34,11 @@ fn list_folder_items(path: &str) -> Result<Vec<FolderItem>, String> {
         let entry = entry_result.map_err(|e| format!("Error processing entry: {}", e))?;
         let metadata = entry.metadata().map_err(|e| format!("Error getting metadata: {}", e))?;
         let file_name = entry.file_name();
-        let is_dir = metadata.is_dir();
+        let is_folder = metadata.is_dir();
 
         items.push(FolderItem {
             name: file_name.into_string().unwrap_or_default(),
-            is_dir,
+            is_folder,
         });
     }
 
