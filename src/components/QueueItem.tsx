@@ -7,7 +7,7 @@ type QueueItemProps = {
 
 function CancelButton({ onCancel }: { onCancel: () => void}) {
     return (
-        <div className="bg-red-500 text-white rounded-full h-4 w-4 flex items-center justify-center" onClick={onCancel}>
+        <div className="bg-red-500 text-white rounded-full h-4 w-4 flex items-center justify-center text-xs cursor-pointer" onClick={onCancel}>
             x
         </div>
     )
@@ -24,7 +24,7 @@ function ProgressBar({ progress }: { progress: number }) {
 function Path({ label, path }: { label: string, path: string }) {
     return (
         <div className="flex justify-between gap-1">
-            <div className="text-gray-400 font-light">{label}</div>
+            <div className="text-gray-600 font-light">{label}</div>
             <div className="text-gray-800 font-semibold">{path}</div>
         </div>
     )
@@ -43,7 +43,7 @@ export default function({ item, onCancel }: QueueItemProps ) {
 
     return (
         
-        <div className="flex flex-col p-1 m-1 rounded-md bg-gray-100">
+        <div className="flex flex-col p-2 my-1 rounded-md bg-gray-200">
             <div className="flex flex-row justify-stretch"> {/* Labels and paths and fractions */}
 
                 <div className="flex flex-col grow"> {/* Labels and paths */}

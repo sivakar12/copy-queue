@@ -1,6 +1,5 @@
 import { invoke } from '@tauri-apps/api/tauri'
 
-import Header from "./components/Header";
 import Picker from "./components/Picker";
 import Queue from "./components/Queue";
 import { useEffect, useState } from 'react';
@@ -18,6 +17,14 @@ export type QueueItem = {
   filesCopied?: number;
   totalFiles?: number;
 };
+
+function Button({ onClick, label }: { onClick: () => void, label: string }) {
+  return (
+    <div className="bg-blue-500 hover:bg-blue-700 text-white font-bold m-2 py-2 px-4 rounded" onClick={onClick}>
+      {label}
+    </div>
+  )
+}
 
 function App() {
   const startingPath: Path = { path: '/', type: 'folder'}
@@ -45,9 +52,8 @@ function App() {
 
   return (
     <div className="container mx-auto">
-        <Header/>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
+      <div className="flex">
+        <div className="flex flex-col flex-1">
           <Picker
             onChange={setSourcePath}
             label="source"
@@ -60,13 +66,21 @@ function App() {
             currentPath={destinationPath}
             foldersOnly={true}
           />
-          <button onClick={handleAdd} className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
-            Add
-          </button>
+          <div className='self-end'>
+            <Button onClick={handleAdd} label='Add'/>
+          </div>
         </div>
-        <Queue
-          items={queue}
-        />
+        <div className="flex flex-col flex-1">
+          <div className="flex-1 justify-stretch">
+            <Queue
+              items={queue}
+            />
+          </div>
+          <div className="flex">
+            <Button label="Start Copying" onClick={() => {}}/>
+            <Button label="Clear All" onClick={() => {setQueue([])}}/>
+          </div>
+        </div>
       </div>
     </div>
 

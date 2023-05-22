@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/tauri'
 import { useEffect, useState } from 'react';
 import { Path } from '../App';
+import { text } from 'stream/consumers';
 
 export type FolderContentItem = {
     name: string;
@@ -18,6 +19,42 @@ function getParentPath(path: string) {
     const parts = path.split('/')
     parts.pop()
     return parts.join('/')
+}
+
+function Title({ text }: { text: string }) {
+    return (
+        <h1 className="text-md font-medium">{text}</h1>
+    )
+}
+
+function BackButton({ onClick }: { onClick: () => void }) {
+    return (
+        <div className="text-xs p-1 cursor-pointer bg-gray-200 text-gray-500 rounded-md" onClick={onClick}>
+            &lt;
+        </div>
+    )
+}
+
+function PathDisplay({ path }: { path: string }) {
+    return (
+        <div className="text-gray-800 ml-1 text-lg font-extrabold">{path}</div>
+    )
+}
+
+function FavoriteButton({ onClick, label }: { onClick: () => void, label: string }) {
+    return (
+        <div className="text-xs p-1 m-1 cursor-pointer bg-gray-200 text-gray-500 rounded-md" onClick={onClick}>
+            {label}
+        </div>
+    )
+}
+
+function PickerItem({ text, onClick, selected }: { text: string, onClick: () => void, selected: boolean }) {
+    let className = selected ? "bg-blue-400" : "bg-gray-200"
+    className += " cursor-pointer text-gray-800 p-1 my-1 rounded-md"
+    return (
+        <div className={className} onClick={onClick}>{text}</div>
+    )
 }
 
 export default function Picker({ onChange, foldersOnly, currentPath, label }: PickerProps) {
@@ -43,32 +80,37 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
     }
 
     return (
-        <div>
-            <h1 className="text-2xl font-bold mb-4">Select {label}</h1>
-            <button onClick={handleBack}>back</button>
-            <div>{currentPath.path}</div>
-            <ul className="max-h-[120px] overflow-auto">
+        <div className="flex flex-col items-stretch m-2 p-2 bg-gray-100 rounded-md">
+            <div className="flex justify-between items-baseline">
+                <Title text={"Select " + label} />
+                <div className="flex gap-0">
+                    <FavoriteButton onClick={() => {}} label="Select favorites" />
+                    <FavoriteButton onClick={() => {}} label="Add to favorites" />
+                </div>
+            </div>
+            <div className="flex justify-start gap-1">
+                <BackButton onClick={handleBack} />
+                <PathDisplay path={currentPath.path} />
+            </div>
+
+            <div className="max-h-[160px] overflow-auto">
                 {items.filter(item => !foldersOnly || foldersOnly && item.isFolder).map(item => {
-                    let props;
+                    let newPath: Path
 
                     if (currentPath.type == 'folder') {
-                        const newPath: Path = { path: currentPath.path + '/' + item.name, type: item.isFolder ? 'folder' : 'file' }
-                        props = {
-                            onClick: () => {onChange(newPath)},
-                        }
+                        newPath = { path: currentPath.path + '/' + item.name, type: item.isFolder ? 'folder' : 'file' }
+      
                     } else {
-                        const newPath: Path = { path: getParentPath(currentPath.path)+ '/' + item.name, type: item.isFolder ? 'folder' : 'file' }
-                        props = {
-                            onClick: () => {onChange(newPath)}
-                        }
+                        newPath = { path: getParentPath(currentPath.path)+ '/' + item.name, type: item.isFolder ? 'folder' : 'file' }
+
                     }
 
                     const icon = item.isFolder ? '📁' : '📄'
-                    const className = currentPath.type == 'file' && currentPath.path == getParentPath(currentPath.path) + '/' + item.name ? 'bg-blue-500' : ''
-                    return  <li {...props} key={item.name} className={className} >{icon} {item.name}</li>
-
+                    const pathSelected = currentPath.type == 'file' && currentPath.path == getParentPath(currentPath.path) + '/' + item.name
+                    return  <PickerItem key={item.name} text={icon + ' ' + item.name} selected={pathSelected} onClick={() => onChange(newPath)}/>
                 })}
-            </ul>
+
+            </div>
         </div>
     );
 }
