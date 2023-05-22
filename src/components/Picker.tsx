@@ -80,7 +80,7 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
     }
 
     return (
-        <div className="flex flex-col items-stretch m-2 p-2 bg-gray-100 rounded-md">
+        <div className="flex flex-col items-stretch m-2 p-2 bg-gray-100 rounded-md opacity-90">
             <div className="flex justify-between items-baseline">
                 <Title text={"Select " + label} />
                 <div className="flex gap-0">

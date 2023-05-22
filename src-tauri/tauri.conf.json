@@ -36,9 +36,11 @@
     "updater": {
       "active": false
     },
+    "macOSPrivateApi": true,
     "windows": [
       {
         "fullscreen": false,
+        "transparent": true,
         "resizable": true,
         "title": "Copy Queue",
         "width": 800,
