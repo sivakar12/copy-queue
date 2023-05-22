@@ -15,6 +15,8 @@ export type QueueItem = {
   destination: string;
   totalBytes?: number;
   bytesCopied?: number;
+  filesCopied?: number;
+  totalFiles?: number;
 };
 
 function App() {
