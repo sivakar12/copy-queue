@@ -15,7 +15,7 @@ function CancelButton({ onCancel }: { onCancel: () => void}) {
 
 function ProgressBar({ progress }: { progress: number }) {
     return (
-        <div className="bg-gray-300 h-4">
+        <div className="bg-gray-300 dark:bg-gray-500 h-4">
             <div style={{ width: `${progress}%` }} className="bg-green-500 h-5"></div>
         </div>
     )
@@ -24,15 +24,15 @@ function ProgressBar({ progress }: { progress: number }) {
 function Path({ label, path }: { label: string, path: string }) {
     return (
         <div className="flex justify-between gap-1">
-            <div className="text-gray-600 font-light">{label}</div>
-            <div className="text-gray-800 font-semibold">{path}</div>
+            <div className="text-gray-600 dark:text-gray-300 font-light">{label}</div>
+            <div className="text-gray-800 dark:text-gray-200 font-semibold">{path}</div>
         </div>
     )
 }
 
 function Fraction({ numerator, denominator, type }: { numerator: number, denominator: number, type: 'files' | 'bytes' }) {
     return (
-        <div className="text-gray-400">
+        <div className="text-gray-400 dark:text-gray-700">
             {numerator} / {denominator} {type}
         </div>
     )
@@ -43,7 +43,7 @@ export default function({ item, onCancel }: QueueItemProps ) {
 
     return (
         
-        <div className="flex flex-col p-2 my-1 rounded-md bg-gray-200">
+        <div className="flex flex-col p-2 my-1 rounded-md bg-gray-200 dark:bg-gray-700">
             <div className="flex flex-row justify-stretch"> {/* Labels and paths and fractions */}
 
                 <div className="flex flex-col grow"> {/* Labels and paths */}

@@ -29,7 +29,7 @@ function Title({ text }: { text: string }) {
 
 function BackButton({ onClick }: { onClick: () => void }) {
     return (
-        <div className="text-xs p-1 cursor-pointer bg-gray-200 text-gray-500 rounded-md" onClick={onClick}>
+        <div className="text-xs p-1 cursor-pointer bg-gray-200 text-gray-500 dark:bg-gray-600 dark:text-white rounded-md" onClick={onClick}>
             &lt;
         </div>
     )
@@ -37,20 +37,20 @@ function BackButton({ onClick }: { onClick: () => void }) {
 
 function PathDisplay({ path }: { path: string }) {
     return (
-        <div className="text-gray-800 ml-1 text-lg font-extrabold">{path}</div>
+        <div className="text-gray-800 dark:text-white ml-1 text-lg font-extrabold">{path}</div>
     )
 }
 
 function FavoriteButton({ onClick, label }: { onClick: () => void, label: string }) {
     return (
-        <div className="text-xs p-1 m-1 cursor-pointer bg-gray-200 text-gray-500 rounded-md" onClick={onClick}>
+        <div className="text-xs p-1 m-1 cursor-pointer bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-200 rounded-md" onClick={onClick}>
             {label}
         </div>
     )
 }
 
 function PickerItem({ text, onClick, selected }: { text: string, onClick: () => void, selected: boolean }) {
-    let className = selected ? "bg-blue-400" : "bg-gray-200"
+    let className = selected ? "bg-blue-400" : "bg-gray-200 dark:bg-gray-700 dark:text-white"
     className += " cursor-pointer text-gray-800 p-1 my-1 rounded-md"
     return (
         <div className={className} onClick={onClick}>{text}</div>
@@ -80,7 +80,7 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
     }
 
     return (
-        <div className="flex flex-col items-stretch m-2 p-2 bg-gray-100 rounded-md opacity-90">
+        <div className="flex flex-col items-stretch m-2 p-2 bg-gray-100 dark:bg-gray-800 dark:text-white rounded-md opacity-90">
             <div className="flex justify-between items-baseline">
                 <Title text={"Select " + label} />
                 <div className="flex gap-0">
