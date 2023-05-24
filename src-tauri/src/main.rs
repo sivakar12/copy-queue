@@ -43,7 +43,7 @@ fn list_folder_items(path: &str) -> Result<Vec<FolderItem>, String> {
             is_folder,
         });
     }
-
+    items.sort_by(|a, b| a.name.cmp(&b.name));
     Ok(items)
 }
 fn main() {
