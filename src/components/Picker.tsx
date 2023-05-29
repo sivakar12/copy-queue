@@ -2,6 +2,8 @@ import { invoke } from '@tauri-apps/api/tauri'
 import { useEffect, useState } from 'react';
 import { Path } from '../App';
 import { text } from 'stream/consumers';
+import FavoritesList from './FavoritesList';
+import { useFavorites } from '../utils/useLocalStorage';
 
 export type FolderContentItem = {
     name: string;
@@ -59,6 +61,8 @@ function PickerItem({ text, onClick, selected }: { text: string, onClick: () => 
 
 export default function Picker({ onChange, foldersOnly, currentPath, label }: PickerProps) {
     const [items, setItems] = useState<FolderContentItem[]>([])
+    const [showFavorites, setShowFavorites] = useState(false)
+    const [favorites, setFavorites] = useFavorites();
 
     useEffect(() => {
         if (currentPath.type === 'file') {
@@ -79,13 +83,23 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
         onChange(newPath)
     }
 
+    const handleRemoveFavorite = (path: Path) => {
+        setFavorites(favs => favs.filter(fav => fav.path !== path.path))
+    }
+
+    const handleFavoriteClick = (path: Path) => {
+        onChange(path)
+        setShowFavorites(false)
+    }
+
     return (
         <div className="flex flex-col items-stretch m-2 p-2 bg-gray-100 dark:bg-gray-800 dark:text-white rounded-md opacity-90">
             <div className="flex justify-between items-baseline">
                 <Title text={"Select " + label} />
                 <div className="flex gap-0">
-                    <FavoriteButton onClick={() => {}} label="Select favorites" />
-                    <FavoriteButton onClick={() => {}} label="Add to favorites" />
+                    {!showFavorites && <FavoriteButton onClick={() => { setShowFavorites(true)}} label="Select favorites" /> }
+                    {showFavorites && <FavoriteButton onClick={() => { setShowFavorites(false)}} label="Close favorites" /> }
+                    <FavoriteButton onClick={() => { setFavorites(favs => [...favs, currentPath])}} label="Add to favorites" />
                 </div>
             </div>
             <div className="flex justify-start gap-1">
@@ -93,7 +107,7 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
                 <PathDisplay path={currentPath.path} />
             </div>
 
-            <div className="max-h-[160px] overflow-auto">
+            {!showFavorites && <div className="max-h-[160px] overflow-auto">
                 {items.filter(item => !foldersOnly || foldersOnly && item.isFolder).map(item => {
                     let newPath: Path
 
@@ -110,7 +124,15 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
                     return  <PickerItem key={item.name} text={icon + ' ' + item.name} selected={pathSelected} onClick={() => onChange(newPath)}/>
                 })}
 
-            </div>
+            </div> }
+
+            {showFavorites && (
+                <FavoritesList 
+                    favorites={favorites} 
+                    onSelect={(path: Path) => handleFavoriteClick(path)}
+                    onRemove={path => handleRemoveFavorite(path)} />
+                
+            )}
         </div>
     );
 }
