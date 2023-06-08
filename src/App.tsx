@@ -52,9 +52,9 @@ function App() {
 
 
   return (
-    <div className="container mx-auto">
-      <div className="flex">
-        <div className="flex flex-col flex-1">
+    <div className="container mx-auto h-screen">
+      <div className="flex m-1 p-1">
+        <div className="flex flex-col flex-1 overflow-hidden">
           <Picker
             onChange={setSourcePath}
             label="source"
@@ -71,8 +71,8 @@ function App() {
             <Button onClick={handleAdd} label='Add'/>
           </div>
         </div>
-        <div className="flex flex-col flex-1">
-          <div className="flex-1 justify-stretch">
+        <div className="flex flex-col flex-1 justify-stretch">
+          <div className="flex-1 justify-stretch m-2">
             <Queue
               items={queue}
             />

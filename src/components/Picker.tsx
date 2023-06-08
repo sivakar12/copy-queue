@@ -53,7 +53,7 @@ function FavoriteButton({ onClick, label }: { onClick: () => void, label: string
 
 function PickerItem({ text, onClick, selected }: { text: string, onClick: () => void, selected: boolean }) {
     let className = selected ? "bg-blue-400" : "bg-gray-200 dark:bg-gray-700 dark:text-white"
-    className += " cursor-pointer text-gray-800 p-1 my-1 rounded-md"
+    className += " cursor-pointer text-gray-800 p-1 my-1 rounded-md overflow-hidden"
     return (
         <div className={className} onClick={onClick}>{text}</div>
     )
@@ -93,7 +93,7 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
     }
 
     return (
-        <div className="flex flex-col items-stretch m-2 p-2 bg-gray-100 dark:bg-gray-800 dark:text-white rounded-md opacity-90">
+        <div className="flex flex-col items-stretch m-2 p-2 bg-gray-100 dark:bg-gray-800 dark:text-white rounded-md opacity-75">
             <div className="flex justify-between items-baseline">
                 <Title text={"Select " + label} />
                 <div className="flex gap-0">
