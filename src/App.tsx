@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/tauri'
+import { listen } from '@tauri-apps/api/event'
 
 import Picker from "./components/Picker";
 import Queue from "./components/Queue";
@@ -17,6 +18,12 @@ export type QueueItem = {
   filesCopied?: number;
   totalFiles?: number;
 };
+
+export type CopyProgress = {
+  id: string;
+  totalBytes: number;
+  bytesCopied: number;
+}
 
 function Button({ onClick, label }: { onClick: () => void, label: string }) {
   return (
@@ -41,6 +48,14 @@ function App() {
     })
   }, [])
 
+  useEffect(() => {
+    const unlisten = listen<CopyProgress>('file-copy-progress', (data) => {
+      console.log('here')
+      console.log(data)
+    })
+    return () => { unlisten.then(u => u()) }
+  }, [])
+
   const handleAdd = () => {
     const newQueueItem: QueueItem = {
       id: '1',
@@ -48,6 +63,16 @@ function App() {
       destination: destinationPath.path,
     }
     setQueue([...queue, newQueueItem])
+  }
+
+  const handleStartCopying = () => {
+    const destinationFilePath = destinationPath.path + '/' + queue[0].source.split('/').pop()
+    invoke('copy_one_file', {
+      source: queue[0].source,
+      destination: destinationFilePath
+    })
+  
+  
   }
 
 
@@ -78,7 +103,7 @@ function App() {
             />
           </div>
           <div className="flex">
-            <Button label="Start Copying" onClick={() => {}}/>
+            <Button label="Start Copying" onClick={handleStartCopying}/>
             <Button label="Clear All" onClick={() => {setQueue([])}}/>
           </div>
         </div>
