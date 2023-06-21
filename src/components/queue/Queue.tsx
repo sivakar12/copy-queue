@@ -1,4 +1,4 @@
-import { QueueItem as QueueItemType } from "../App";
+import { QueueItem as QueueItemType } from "../../App";
 import QueueItem from './QueueItem';
 
 type QueueProps = {

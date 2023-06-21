@@ -1,9 +1,9 @@
 import { invoke } from '@tauri-apps/api/tauri'
 import { useEffect, useState } from 'react';
-import { Path } from '../App';
+import { Path } from '../../App';
 import { text } from 'stream/consumers';
 import FavoritesList from './FavoritesList';
-import { useFavorites } from '../utils/useLocalStorage';
+import { useFavorites } from '../../utils/useLocalStorage';
 
 export type FolderContentItem = {
     name: string;

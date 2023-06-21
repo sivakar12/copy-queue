@@ -1,8 +1,8 @@
 import { invoke } from '@tauri-apps/api/tauri'
 import { listen } from '@tauri-apps/api/event'
 
-import Picker from "./components/Picker";
-import Queue from "./components/Queue";
+import Picker from "./components/picker/Picker";
+import Queue from "./components/queue/Queue";
 import { useEffect, useState } from 'react';
 
 export type Path = {

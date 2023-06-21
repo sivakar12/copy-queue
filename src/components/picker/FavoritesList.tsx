@@ -1,5 +1,5 @@
-import { Path } from "../App"
-import { CancelButton } from "./QueueItem"
+import { Path } from "../../App"
+import { CancelButton } from "../queue/QueueItem"
 // TODO: Should there be two favorites? One for source and one for destination?
 
 function FavoriteItem({ path, onClick, onRemove }: { path: Path, onClick: () => void, onRemove: () => void}) {
