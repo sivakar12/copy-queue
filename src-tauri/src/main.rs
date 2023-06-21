@@ -25,7 +25,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             commands::get_home_folder_path, 
             commands::list_folder_items, 
-            commands::copy_one_file
+            commands::copy_one_file,
+            commands::get_drives,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

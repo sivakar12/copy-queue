@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Path } from '../App';
 
 export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
   const [storedValue, setStoredValue] = useState<T>(() => {
@@ -30,9 +29,4 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
   }, [key]);
 
   return [storedValue, setValue];
-}
-
-export function useFavorites(): [Path[], (value: Path[] | ((val: Path[]) => Path[])) => void] {
-  const [favorites, setFavorites] = useLocalStorage<Path[]>('favorites', []);
-  return [favorites, setFavorites];
 }

@@ -1,10 +1,12 @@
 import { invoke } from '@tauri-apps/api/tauri'
 import { useEffect, useState } from 'react';
 import { Path } from '../../App';
-import { text } from 'stream/consumers';
 import FavoritesList from './FavoritesList';
-import { useFavorites } from '../../utils/useLocalStorage';
-
+import useFavorites from '../../utils/useFavorites';
+import useDrives from '../../utils/useDrives';
+import { PickerMenu, PickerMenuContainer, PickerMenuItem } from './PickerDropDownMenu';
+import { BackButton, PathDisplay, Title, ToggleButton } from './Misc';
+import { PickerList, PickerListItem } from './PickerList';
 export type FolderContentItem = {
     name: string;
     isFolder: boolean;
@@ -17,56 +19,25 @@ export type PickerProps = {
     label: string;
 }
 
+enum PickerView {
+    FAVORITES,
+    DRIVES,
+    FOLDER_CONTENT
+}
+
 function getParentPath(path: string) {
     const parts = path.split('/')
     parts.pop()
     return parts.join('/')
 }
 
-// TODO: Get a proper order for tailwind classes
-
-function Title({ text }: { text: string }) {
-    return (
-        <h1 className="text-md font-medium">{text}</h1>
-    )
-}
-
-function BackButton({ onClick }: { onClick: () => void }) {
-    return (
-        <div className="text-lg font-bold p-1 bg-gray-200 text-gray-500 dark:bg-gray-600 dark:text-white rounded-md flex justify-center items-center" onClick={onClick}>
-            &lt;
-        </div>
-    )
-}
-
-function PathDisplay({ path }: { path: string }) {
-    return (
-        <div className="flex-grow bg-gray-200 text-gray-500 dark:bg-gray-600 bg-gray dark:text-white ml-1 text-lg font-bold flex items-center p-1">{path}</div>
-    )
-}
-
-function FavoritesToggle({ onClick, isShowing }: { onClick: () => void, isShowing: boolean }) {
-    return (
-        <div className={`text-xs p-1 m-1 bg-gray-${isShowing ? "300" : "200"} text-gray-500 dark:bg-gray-${isShowing ? "600" : "700"} dark:text-gray-200 rounded-md`} onClick={onClick}>
-            Favorites
-        </div>
-    )
-}
-
-function PickerItem({ text, onClick, selected }: { text: string, onClick: () => void, selected: boolean }) {
-    let className = selected ? "bg-blue-400" : "bg-gray-200 dark:bg-gray-700 dark:text-white"
-    className += " text-gray-800 p-1 my-1 rounded-md overflow-hidden"
-    return (
-        <div className={className} onClick={onClick}>{text}</div>
-    )
-}
-
 export default function Picker({ onChange, foldersOnly, currentPath, label }: PickerProps) {
     const [items, setItems] = useState<FolderContentItem[]>([])
-    const [showFavorites, setShowFavorites] = useState(false)
-    const [showMenu, setShowMenu] = useState(false)
-    const [favorites, setFavorites] = useFavorites()
+    const [pickerView, setPickerView] = useState<PickerView>(PickerView.FOLDER_CONTENT)
 
+    const [favorites, setFavorites] = useFavorites()
+    const drives = useDrives()
+    
     useEffect(() => {
         if (currentPath.type === 'file') {
             return
@@ -97,90 +68,118 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
 
     const handleOpenOSPicker = () => {
         alert("Pick with OS file picker")
-        setShowMenu(false)
     }
 
     const handleRemoveFavorite = (path: Path) => {
         setFavorites(favs => favs.filter(fav => fav.path !== path.path))
     }
 
-    const handleFavoriteClick = (path: Path) => {
+    const goToPath = (path: Path) => {
         onChange(path)
-        setShowFavorites(false)
+        setPickerView(PickerView.FOLDER_CONTENT)
     }
 
-    const PickerMenuItem = ({ label, onClick }: { label: string, onClick: () => void }) => {
-        return (
-            <div className="text-xs m-0.5 p-0.5 bg-gray-300 hover:bg-gray-400 text-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 rounded-md opacity-100" onClick={onClick}>
-                {label}
-            </div>
-        )
-    }
-    const PickerMenu = () => {
-        return (
-            <div className="absolute right-0 top-0 z-50 bg-gray-300 dark:bg-gray-800 dark:text-white p-0.5 m-1 rounded-md opacity-100">
-                <PickerMenuItem label="Add to favorites" onClick={handleAddToFavorites}/>
-                <PickerMenuItem label="Open OS picker" onClick={handleOpenOSPicker} />
-                <PickerMenuItem label="Sort by date" onClick={() => {}}/>
-                <PickerMenuItem label="Sort by name" onClick={() => {}}/>
-                <PickerMenuItem label="Sort by size" onClick={() => {}}/>
-
-            </div>
-        )
+    const handleDrivesToggle = () => {
+        if (pickerView === PickerView.DRIVES) {
+            setPickerView(PickerView.FOLDER_CONTENT)
+        } else {
+            setPickerView(PickerView.DRIVES)
+        }
     }
 
-    // TODO: Make this reusable
-    const PickerMenuContainer = () => (
-        <div className="">
-            <div className={`text-xs p-1 m-1 bg-gray-${showMenu ? "300" : "200"} text-gray-500 dark:bg-gray-${showMenu ? "600" : "700"} dark:text-gray-200 rounded-md`} onClick={() => setShowMenu(!showMenu)}>
-            ⋮
-            </div>
-            <div className="relative h-0">
-
-                {showMenu && <PickerMenu />}
-            </div>
-        </div>
-    )
+    const handleFavoritesToggle = () => {
+        if (pickerView === PickerView.FAVORITES) {
+            setPickerView(PickerView.FOLDER_CONTENT)
+        } else {
+            setPickerView(PickerView.FAVORITES)
+        }
+    }
 
     return (
         <div className="flex flex-col items-stretch m-2 p-2 bg-gray-100 dark:bg-gray-800 dark:text-white rounded-md opacity-75">
+            
+            {/* Top bar with label and menu items */}
             <div className="flex justify-between items-baseline">
                 <Title text={"Select " + label} />
                 <div className="flex gap-0">
-                    <FavoritesToggle onClick={() => { setShowFavorites(!showFavorites)}} isShowing={showFavorites} />
-                    <PickerMenuContainer/>
+                    <ToggleButton label="Drives" onClick={handleDrivesToggle} isOn={pickerView == PickerView.DRIVES} />
+                    <ToggleButton label="Favorites" onClick={handleFavoritesToggle} isOn={pickerView == PickerView.FAVORITES} />
+                    <PickerMenuContainer>
+                        <PickerMenu>
+                            <PickerMenuItem label="Add to favorites" onClick={handleAddToFavorites}/>
+                            <PickerMenuItem label="Open OS picker" onClick={handleOpenOSPicker} />
+                            <PickerMenuItem label="Sort by date" onClick={() => {}}/>
+                            <PickerMenuItem label="Sort by name" onClick={() => {}}/>
+                            <PickerMenuItem label="Sort by size" onClick={() => {}}/>
+                        </PickerMenu>
+                    </PickerMenuContainer>
                 </div>
             </div>
+
+            {/* Path and back button */}
             <div className="flex justify-start gap-1 items-stretch">
                 <BackButton onClick={handleBack} />
                 <PathDisplay path={currentPath.path} />
             </div>
 
-            {!showFavorites && <div className="max-h-[160px] overflow-auto">
-                {items.filter(item => !foldersOnly || foldersOnly && item.isFolder).map(item => {
-                    let newPath: Path
+            {/* List of items from selected path, drives or favorites */}
 
-                    if (currentPath.type == 'folder') {
-                        newPath = { path: currentPath.path + '/' + item.name, type: item.isFolder ? 'folder' : 'file' }
-      
-                    } else {
-                        newPath = { path: getParentPath(currentPath.path)+ '/' + item.name, type: item.isFolder ? 'folder' : 'file' }
+            {pickerView == PickerView.FOLDER_CONTENT && 
+                <PickerList>
+                    {items.filter(item => !foldersOnly || foldersOnly && item.isFolder).map(item => {
+                        let newPath: Path
 
-                    }
+                        if (currentPath.type == 'folder') {
+                            newPath = { path: currentPath.path + '/' + item.name, type: item.isFolder ? 'folder' : 'file' }
+        
+                        } else {
+                            newPath = { path: getParentPath(currentPath.path)+ '/' + item.name, type: item.isFolder ? 'folder' : 'file' }
 
-                    const icon = item.isFolder ? '📁' : '📄'
-                    const pathSelected = currentPath.type == 'file' && currentPath.path == getParentPath(currentPath.path) + '/' + item.name
-                    return  <PickerItem key={item.name} text={icon + ' ' + item.name} selected={pathSelected} onClick={() => onChange(newPath)}/>
-                })}
+                        }
 
-            </div> }
+                        const icon = item.isFolder ? '📁' : '📄'
+                        const text = icon + ' ' + item.name
+                        const pathSelected = currentPath.type == 'file' && currentPath.path == getParentPath(currentPath.path) + '/' + item.name
+                        return (
+                            <PickerListItem 
+                                key={item.name} 
+                                text={text} 
+                                selected={pathSelected} 
+                                onClick={() => onChange(newPath)}
+                                showRemoveButton={false}
+                            />
+                        )
+                    })}
+                </PickerList>
+            }
 
-            {showFavorites && (
-                <FavoritesList 
-                    favorites={favorites} 
-                    onSelect={(path: Path) => handleFavoriteClick(path)}
-                    onRemove={path => handleRemoveFavorite(path)} />
-                
+            {pickerView == PickerView.FAVORITES && (
+                <PickerList>
+                    {favorites.map(f => 
+                        <PickerListItem
+                            key={f.path}
+                            text={f.path}
+                            selected={false}
+                            showRemoveButton={true}
+                            onRemove={() => handleRemoveFavorite(f)}
+                            onClick={() => goToPath(f)}
+                            />
+                    )}
+                </PickerList>
+            )}
+
+            {pickerView == PickerView.DRIVES && (
+                <PickerList>
+                    {drives.map(drive => 
+                        <PickerListItem
+                            key={drive}
+                            text={drive}
+                            selected={false}
+                            showRemoveButton={false}
+                            onClick={() => goToPath({ path: drive, type: 'folder' })}
+                            />
+                    )}
+                </PickerList>
             )}
         </div>
     );
