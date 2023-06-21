@@ -23,6 +23,8 @@ function getParentPath(path: string) {
     return parts.join('/')
 }
 
+// TODO: Get a proper order for tailwind classes
+
 function Title({ text }: { text: string }) {
     return (
         <h1 className="text-md font-medium">{text}</h1>
@@ -31,7 +33,7 @@ function Title({ text }: { text: string }) {
 
 function BackButton({ onClick }: { onClick: () => void }) {
     return (
-        <div className="text-xs p-1 cursor-pointer bg-gray-200 text-gray-500 dark:bg-gray-600 dark:text-white rounded-md" onClick={onClick}>
+        <div className="text-lg font-bold cursor-pointer p-1 bg-gray-200 text-gray-500 dark:bg-gray-600 dark:text-white rounded-md flex justify-center items-center" onClick={onClick}>
             &lt;
         </div>
     )
@@ -39,7 +41,7 @@ function BackButton({ onClick }: { onClick: () => void }) {
 
 function PathDisplay({ path }: { path: string }) {
     return (
-        <div className="text-gray-800 dark:text-white ml-1 text-lg font-extrabold">{path}</div>
+        <div className="flex-grow bg-gray-200 text-gray-500 dark:bg-gray-600 dark:text-white ml-1 text-lg font-bold flex items-center p-1">{path}</div>
     )
 }
 
@@ -102,7 +104,7 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
                     <FavoriteButton onClick={() => { setFavorites(favs => [...favs, currentPath])}} label="Add to favorites" />
                 </div>
             </div>
-            <div className="flex justify-start gap-1">
+            <div className="flex justify-start gap-1 items-stretch">
                 <BackButton onClick={handleBack} />
                 <PathDisplay path={currentPath.path} />
             </div>
