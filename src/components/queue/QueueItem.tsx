@@ -44,9 +44,10 @@ export default function({ item, onCancel }: QueueItemProps ) {
                     <Path label="Destination" path={item.destination} />
                 </div>
                 {/* Fractions */}
-                {item.filesCopied && item.bytesCopied && item.totalBytes && item.totalFiles && 
+                {/* {item.filesCopied && item.bytesCopied && item.totalBytes && item.totalFiles &&  */}
+                {item.bytesCopied && item.totalBytes && 
                     <div className="flex flex-col flex-auto">
-                        <Fraction numerator={item.filesCopied} denominator={item.totalFiles} type="files" />
+                        {/* <Fraction numerator={item.filesCopied} denominator={item.totalFiles} type="files" /> */}
                         <Fraction numerator={item.bytesCopied} denominator={item.totalBytes} type="bytes" />
                     </div>
                 }
@@ -59,6 +60,9 @@ export default function({ item, onCancel }: QueueItemProps ) {
                     <RoundCloseButton onClick={onCancel}/>
                 </div>
             </div>
+            {
+                JSON.stringify(item, null, 2)
+            }
             {/* TODO: Add files fraction and bytes fraction */}
         </div>
     )

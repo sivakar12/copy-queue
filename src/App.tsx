@@ -33,12 +33,16 @@ function Button({ onClick, label }: { onClick: () => void, label: string }) {
   )
 }
 
+export type Queue = {
+  [id: string]: QueueItem;
+}
+
 function App() {
   const startingPath: Path = { path: '/', type: 'folder'}
   const [sourcePath, setSourcePath] = useState<Path>(startingPath) // file or folder
   const [destinationPath, setDestinationPath] = useState<Path>(startingPath) // folder
 
-  const [queue, setQueue] = useState<QueueItem[]>([])
+  const [queue, setQueue] = useState<Queue>({});
 
   useEffect(() => {
     invoke<string>('get_home_folder_path').then(pathString => {
@@ -50,31 +54,50 @@ function App() {
 
   useEffect(() => {
     const unlisten = listen<CopyProgress>('file-copy-progress', (data) => {
-      console.log('here')
-      console.log(data)
+      const copyProgrssData = data.payload;
+      console.log(copyProgrssData)
+      setQueue((prevQueue) => {
+        const queueItem = prevQueue[copyProgrssData.id]
+        const newQueueItem = {
+          ...queueItem,
+          totalBytes: copyProgrssData.totalBytes,
+          bytesCopied: copyProgrssData.bytesCopied,
+        }
+        return {
+          ...prevQueue,
+          [copyProgrssData.id]: newQueueItem
+        }
+      })
     })
     return () => { unlisten.then(u => u()) }
   }, [])
 
   const handleAdd = () => {
+    // TODO: What is a better id string?
+    const timestampString = new Date().getTime().toString()
     const newQueueItem: QueueItem = {
-      id: '1',
+      id: timestampString,
       source: sourcePath.path,
       destination: destinationPath.path,
     }
-    setQueue([...queue, newQueueItem])
+    setQueue({
+      ...queue,
+      [newQueueItem.id]: newQueueItem
+    })
   }
 
   const handleStartCopying = () => {
-    const destinationFilePath = destinationPath.path + '/' + queue[0].source.split('/').pop()
+    // This copies only the first item in the queue for now.
+    const firstItem = Object.values(queue)[0]
+    const destinationFilePath = destinationPath.path + '/' + firstItem.source.split('/').pop()
     invoke('copy_one_file', {
-      source: queue[0].source,
-      destination: destinationFilePath
+      copyRequest: {
+        id: firstItem.id,
+        source: firstItem.source,
+        destination: destinationFilePath
+      }
     })
-  
-  
   }
-
 
   return (
     <div className="container mx-auto h-screen">
@@ -99,12 +122,12 @@ function App() {
         <div className="flex flex-col flex-1 justify-stretch">
           <div className="flex-1 justify-stretch m-2">
             <Queue
-              items={queue}
+              queue={queue}
             />
           </div>
           <div className="flex">
             <Button label="Start Copying" onClick={handleStartCopying}/>
-            <Button label="Clear All" onClick={() => {setQueue([])}}/>
+            <Button label="Clear All" onClick={() => {setQueue({})}}/>
           </div>
         </div>
       </div>

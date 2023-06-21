@@ -1,10 +1,13 @@
 
 use std::env;
+use std::time::Duration;
+use std::time::Instant;
 use tauri;
 use tauri::Manager;
 use std::fs;
 use std::sync::mpsc;
 
+use crate::types::CopyRequest;
 use crate::types::FolderItem;
 use crate::utils;
 use crate::types;
@@ -36,8 +39,10 @@ pub fn list_folder_items(path: &str) -> Result<Vec<FolderItem>, String> {
 }
 
 #[tauri::command]
-pub fn copy_one_file(source: String, destination: String, app_handle: tauri::AppHandle) -> tauri::Result<()> {
-    let id = destination.clone();
+pub fn copy_one_file(copy_request: CopyRequest, app_handle: tauri::AppHandle) -> tauri::Result<()> {
+    let id = copy_request.id.clone();
+    let source = copy_request.source.clone();
+    let destination = copy_request.destination.clone();
     let (progress_sender, progress_receiver) = mpsc::channel();
     let file_size_int_bytes = fs::metadata(&source).unwrap().len();
 
@@ -45,14 +50,29 @@ pub fn copy_one_file(source: String, destination: String, app_handle: tauri::App
         _ = utils::copy_with_progress(&source, &destination, progress_sender);
     });
 
+    let mut last_sent = Instant::now();
+    let interval = Duration::from_millis(1000);
+
+
     for progress in progress_receiver {
+        let now = Instant::now();
+        if (now - last_sent) < interval {
+            continue;
+        }
         let progress = types::CopyProgress {
             id: id.clone(),
             bytes_copied: progress,
             total_bytes: file_size_int_bytes,
         };
         app_handle.emit_all("file-copy-progress", Some(progress)).unwrap();
+        last_sent = now;
     }
+    let progress = types::CopyProgress {
+        id: id.clone(),
+        bytes_copied: file_size_int_bytes,
+        total_bytes: file_size_int_bytes,
+    };
+    app_handle.emit_all("file-copy-progress", Some(progress)).unwrap();
 
     Ok(())
 }
