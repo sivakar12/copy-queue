@@ -33,7 +33,7 @@ function Title({ text }: { text: string }) {
 
 function BackButton({ onClick }: { onClick: () => void }) {
     return (
-        <div className="text-lg font-bold cursor-pointer p-1 bg-gray-200 text-gray-500 dark:bg-gray-600 dark:text-white rounded-md flex justify-center items-center" onClick={onClick}>
+        <div className="text-lg font-bold p-1 bg-gray-200 text-gray-500 dark:bg-gray-600 dark:text-white rounded-md flex justify-center items-center" onClick={onClick}>
             &lt;
         </div>
     )
@@ -47,7 +47,7 @@ function PathDisplay({ path }: { path: string }) {
 
 function FavoritesToggle({ onClick, isShowing }: { onClick: () => void, isShowing: boolean }) {
     return (
-        <div className={`text-xs p-1 m-1 cursor-pointer bg-gray-${isShowing ? "300" : "200"} text-gray-500 dark:bg-gray-${isShowing ? "600" : "700"} dark:text-gray-200 rounded-md`} onClick={onClick}>
+        <div className={`text-xs p-1 m-1 bg-gray-${isShowing ? "300" : "200"} text-gray-500 dark:bg-gray-${isShowing ? "600" : "700"} dark:text-gray-200 rounded-md`} onClick={onClick}>
             Favorites
         </div>
     )
@@ -55,7 +55,7 @@ function FavoritesToggle({ onClick, isShowing }: { onClick: () => void, isShowin
 
 function PickerItem({ text, onClick, selected }: { text: string, onClick: () => void, selected: boolean }) {
     let className = selected ? "bg-blue-400" : "bg-gray-200 dark:bg-gray-700 dark:text-white"
-    className += " cursor-pointer text-gray-800 p-1 my-1 rounded-md overflow-hidden"
+    className += " text-gray-800 p-1 my-1 rounded-md overflow-hidden"
     return (
         <div className={className} onClick={onClick}>{text}</div>
     )
@@ -111,7 +111,7 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
 
     const PickerMenuItem = ({ label, onClick }: { label: string, onClick: () => void }) => {
         return (
-            <div className="text-xs m-0.5 p-0.5 cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 rounded-md opacity-100" onClick={onClick}>
+            <div className="text-xs m-0.5 p-0.5 bg-gray-300 hover:bg-gray-400 text-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 rounded-md opacity-100" onClick={onClick}>
                 {label}
             </div>
         )
@@ -132,7 +132,7 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
     // TODO: Make this reusable
     const PickerMenuContainer = () => (
         <div className="">
-            <div className={`text-xs p-1 m-1 cursor-pointer bg-gray-${showMenu ? "300" : "200"} text-gray-500 dark:bg-gray-${showMenu ? "600" : "700"} dark:text-gray-200 rounded-md`} onClick={() => setShowMenu(!showMenu)}>
+            <div className={`text-xs p-1 m-1 bg-gray-${showMenu ? "300" : "200"} text-gray-500 dark:bg-gray-${showMenu ? "600" : "700"} dark:text-gray-200 rounded-md`} onClick={() => setShowMenu(!showMenu)}>
             ⋮
             </div>
             <div className="relative h-0">

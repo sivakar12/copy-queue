@@ -4,7 +4,7 @@ import RoundCloseButton from "../common/RoundCloseButton"
 
 function FavoriteItem({ path, onClick, onRemove }: { path: Path, onClick: () => void, onRemove: () => void}) {
     return (
-        <div className="flex flex-row justify-between bg-gray-200 dark:bg-gray-700 dark:text-white cursor-pointer text-gray-800 p-1 my-1 rounded-md" onClick={onClick}>
+        <div className="flex flex-row justify-between bg-gray-200 dark:bg-gray-700 dark:text-white text-gray-800 p-1 my-1 rounded-md" onClick={onClick}>
             <div className="text-gray-700 dark:text-gray-300">{path.path}</div>
             <RoundCloseButton onClick={onRemove} />
         </div>
