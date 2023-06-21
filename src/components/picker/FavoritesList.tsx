@@ -1,12 +1,12 @@
 import { Path } from "../../App"
-import { CancelButton } from "../queue/QueueItem"
+import RoundCloseButton from "../common/RoundCloseButton"
 // TODO: Should there be two favorites? One for source and one for destination?
 
 function FavoriteItem({ path, onClick, onRemove }: { path: Path, onClick: () => void, onRemove: () => void}) {
     return (
         <div className="flex flex-row justify-between bg-gray-200 dark:bg-gray-700 dark:text-white cursor-pointer text-gray-800 p-1 my-1 rounded-md" onClick={onClick}>
             <div className="text-gray-700 dark:text-gray-300">{path.path}</div>
-            <CancelButton onCancel={onRemove} />
+            <RoundCloseButton onClick={onRemove} />
         </div>
     )
 }

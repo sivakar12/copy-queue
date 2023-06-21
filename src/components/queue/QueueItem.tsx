@@ -1,18 +1,10 @@
 import { QueueItem as QueueItemType } from '../../App';
+import RoundCloseButton from '../common/RoundCloseButton';
 
 type QueueItemProps = {
     item: QueueItemType;
     onCancel : () => void;
 }
-
-// TODO: Move to common components folder
-export function CancelButton({ onCancel }: { onCancel: () => void}) {
-    return (
-        <div className="bg-red-500 text-white rounded-full h-4 w-4 flex items-center justify-center text-xs cursor-pointer" onClick={onCancel}>
-            x
-        </div>
-    )
-} 
 
 function ProgressBar({ progress }: { progress: number }) {
     return (
@@ -64,7 +56,7 @@ export default function({ item, onCancel }: QueueItemProps ) {
                     <ProgressBar progress={progress} />
                 </div>
                 <div className="flex-none">
-                    <CancelButton onCancel={onCancel}/>
+                    <RoundCloseButton onClick={onCancel}/>
                 </div>
             </div>
             {/* TODO: Add files fraction and bytes fraction */}
