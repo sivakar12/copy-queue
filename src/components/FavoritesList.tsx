@@ -14,8 +14,7 @@ function FavoriteItem({ path, onClick, onRemove }: { path: Path, onClick: () => 
 export default function({ favorites, onSelect, onRemove }: { favorites: Path[], onSelect: (path: Path) => void, onRemove: (path: Path) => void }) {
     return (
         <div>
-            <div>Favorites</div>
-            <div className="flex flex-col p-1">
+            <div className="flex flex-col">
                 {favorites.map((favorite, index) => (
                     <FavoriteItem 
                         key={index}
