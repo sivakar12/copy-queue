@@ -4,8 +4,11 @@ import { Path } from '../../App';
 import useFavorites from '../../utils/useFavorites';
 import useDrives from '../../utils/useDrives';
 import { PickerMenu, PickerMenuContainer, PickerMenuItem } from './PickerDropDownMenu';
-import { BackButton, PathDisplay, Title, ToggleButton } from './Misc';
 import { PickerList, PickerListItem } from './PickerList';
+import ToggleButton from './ToggleButton';
+import BackButton from './BackButton';
+import PathDisplay from './PathDisplay';
+import Title from '../common/Title';
 
 export type FolderContentItem = {
     name: string;
@@ -99,8 +102,8 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
         <div className="flex flex-col items-stretch m-2 p-2 bg-gray-100 dark:bg-gray-800 dark:text-white rounded-md opacity-75">
             
             {/* Top bar with label and menu items */}
-            <div className="flex justify-between items-baseline">
-                <Title text={"Select " + label} />
+            <div className="flex justify-between items-center">
+                <Title text={label} />
                 <div className="flex gap-0">
                     <ToggleButton label="Drives" onClick={handleDrivesToggle} isOn={pickerView == PickerView.DRIVES} />
                     <ToggleButton label="Favorites" onClick={handleFavoritesToggle} isOn={pickerView == PickerView.FAVORITES} />

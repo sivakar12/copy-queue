@@ -105,13 +105,13 @@ function App() {
         <div className="flex flex-col flex-1 overflow-hidden">
           <Picker
             onChange={setSourcePath}
-            label="source"
+            label="Source Picker"
             currentPath={sourcePath}
             foldersOnly={false}
           />
           <Picker
             onChange={setDestinationPath}
-            label="destination"
+            label="Destination Picker"
             currentPath={destinationPath}
             foldersOnly={true}
           />
