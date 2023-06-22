@@ -38,7 +38,7 @@ pub fn list_folder_items(path: &str) -> Result<Vec<FolderItem>, String> {
     Ok(items)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn copy_one_file(copy_request: CopyRequest, app_handle: tauri::AppHandle) -> tauri::Result<()> {
     let id = copy_request.id.clone();
     let source = copy_request.source.clone();
@@ -51,7 +51,7 @@ pub fn copy_one_file(copy_request: CopyRequest, app_handle: tauri::AppHandle) ->
     });
 
     let mut last_sent = Instant::now();
-    let interval = Duration::from_millis(1000);
+    let interval = Duration::from_millis(100);
 
 
     for progress in progress_receiver {
