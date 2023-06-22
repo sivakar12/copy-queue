@@ -1,26 +1,11 @@
 import { QueueItem as QueueItemType } from '../../App';
 import RoundCloseButton from '../common/RoundCloseButton';
+import PathDisplay from './PathDisplay';
+import ProgressBar from './ProgressBar';
 
 type QueueItemProps = {
     item: QueueItemType;
     onCancel : () => void;
-}
-
-function ProgressBar({ progress }: { progress: number }) {
-    return (
-        <div className="bg-gray-300 dark:bg-gray-500 h-4">
-            <div style={{ width: `${progress}%` }} className="bg-green-500 h-5"></div>
-        </div>
-    )
-}
-
-function Path({ label, path }: { label: string, path: string }) {
-    return (
-        <div className="flex justify-between gap-1">
-            <div className="text-gray-600 dark:text-gray-300 font-light">{label}</div>
-            <div className="text-gray-800 dark:text-gray-200 font-semibold">{path}</div>
-        </div>
-    )
 }
 
 function Fraction({ numerator, denominator, type }: { numerator: number, denominator: number, type: 'files' | 'bytes' }) {
@@ -39,11 +24,10 @@ export default function({ item, onCancel }: QueueItemProps ) {
         <div className="flex flex-col p-2 my-1 rounded-md bg-gray-200 dark:bg-gray-700">
             <div className="flex flex-row justify-stretch"> {/* Labels and paths and fractions */}
 
-                <div className="flex flex-col grow"> {/* Labels and paths */}
-                    <Path label="Source" path={item.source} />
-                    <Path label="Destination" path={item.destination} />
-                </div>
-                {/* Fractions */}
+                <PathDisplay 
+                    source={item.source}
+                    destination={item.destination}
+                />
                 {/* {item.filesCopied && item.bytesCopied && item.totalBytes && item.totalFiles &&  */}
                 {item.bytesCopied && item.totalBytes && 
                     <div className="flex flex-col flex-auto">
@@ -60,10 +44,7 @@ export default function({ item, onCancel }: QueueItemProps ) {
                     <RoundCloseButton onClick={onCancel}/>
                 </div>
             </div>
-            {
-                JSON.stringify(item, null, 2)
-            }
-            {/* TODO: Add files fraction and bytes fraction */}
+            {/* TODO: Add subtasks and toggle to see sub tasks */}
         </div>
     )
 }

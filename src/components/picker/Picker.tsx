@@ -1,12 +1,12 @@
 import { invoke } from '@tauri-apps/api/tauri'
 import { useEffect, useState } from 'react';
 import { Path } from '../../App';
-import FavoritesList from './FavoritesList';
 import useFavorites from '../../utils/useFavorites';
 import useDrives from '../../utils/useDrives';
 import { PickerMenu, PickerMenuContainer, PickerMenuItem } from './PickerDropDownMenu';
 import { BackButton, PathDisplay, Title, ToggleButton } from './Misc';
 import { PickerList, PickerListItem } from './PickerList';
+
 export type FolderContentItem = {
     name: string;
     isFolder: boolean;
