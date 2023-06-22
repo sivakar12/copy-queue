@@ -1,6 +1,5 @@
 import { invoke } from '@tauri-apps/api/tauri'
 import { useEffect, useState } from 'react';
-import { Path } from '../../App';
 import useFavorites from '../../utils/useFavorites';
 import useDrives from '../../utils/useDrives';
 import { PickerMenu, PickerMenuContainer, PickerMenuItem } from './PickerDropDownMenu';
@@ -9,11 +8,8 @@ import ToggleButton from './ToggleButton';
 import BackButton from './BackButton';
 import PathDisplay from './PathDisplay';
 import Title from '../common/Title';
+import { FolderContentItem, Path } from '../../types';
 
-export type FolderContentItem = {
-    name: string;
-    isFolder: boolean;
-}
 
 export type PickerProps = {
     onChange: (newPath: Path) => void;

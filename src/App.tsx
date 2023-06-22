@@ -4,26 +4,11 @@ import { listen } from '@tauri-apps/api/event'
 import Picker from "./components/picker/Picker";
 import Queue from "./components/queue/Queue";
 import { useEffect, useState } from 'react';
+import { Path, Queue as QueueType, CopyProgress, QueueItem } from './types';
 
-export type Path = {
-  path: string;
-  type: 'folder' | 'file';
-}
-export type QueueItem = {
-  id: string;
-  source: string;
-  destination: string;
-  totalBytes?: number;
-  bytesCopied?: number;
-  filesCopied?: number;
-  totalFiles?: number;
-};
 
-export type CopyProgress = {
-  id: string;
-  totalBytes: number;
-  bytesCopied: number;
-}
+
+
 
 function Button({ onClick, label }: { onClick: () => void, label: string }) {
   return (
@@ -33,16 +18,13 @@ function Button({ onClick, label }: { onClick: () => void, label: string }) {
   )
 }
 
-export type Queue = {
-  [id: string]: QueueItem;
-}
 
 function App() {
   const startingPath: Path = { path: '/', type: 'folder'}
   const [sourcePath, setSourcePath] = useState<Path>(startingPath) // file or folder
   const [destinationPath, setDestinationPath] = useState<Path>(startingPath) // folder
 
-  const [queue, setQueue] = useState<Queue>({});
+  const [queue, setQueue] = useState<QueueType>({});
 
   useEffect(() => {
     invoke<string>('get_home_folder_path').then(pathString => {
