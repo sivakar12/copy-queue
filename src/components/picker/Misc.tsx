@@ -14,7 +14,7 @@ export function BackButton({ onClick }: { onClick: () => void }) {
 
 export function PathDisplay({ path }: { path: string }) {
     return (
-        <div className="flex-grow bg-gray-200 text-gray-500 dark:bg-gray-600 bg-gray dark:text-white ml-1 text-lg font-bold flex items-center p-1">{path}</div>
+        <div className="flex-grow bg-gray-200 text-gray-500 dark:bg-gray-600 bg-gray dark:text-white ml-1 text-lg font-bold flex items-center p-1 break-all">{path}</div>
     )
 }
 

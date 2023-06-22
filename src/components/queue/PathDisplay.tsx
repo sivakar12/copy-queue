@@ -14,7 +14,7 @@ function PathLabel({ text }: { text: string }) {
 
 function PathValue({ text }: { text: string }) {
     return (
-        <div className="text-gray-800 dark:text-gray-200 font-semibold self-right flex-grow">
+        <div className="text-gray-800 dark:text-gray-200 font-semibold self-right flex-grow break-all">
             {text}
         </div>
     )
