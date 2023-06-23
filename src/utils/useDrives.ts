@@ -1,12 +1,13 @@
 import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
+import { Path } from "../types";
 
 export default function useDrives() {
-    const [drives, setDrives] = useState<string[]>([]);
+    const [drives, setDrives] = useState<Path[]>([]);
 
     useEffect(() => {
-        invoke<string[]>("get_drives").then((drives) => {
-            console.log(drives)
+        invoke<Path[]>("get_drives").then((drives) => {
+            console.log('drives', drives)
             setDrives(drives);
         });
     }, []);

@@ -8,12 +8,12 @@ import ToggleButton from './ToggleButton';
 import BackButton from './BackButton';
 import PathDisplay from './PathDisplay';
 import Title from '../common/Title';
-import { FolderContentItem, Path } from '../../types';
+import { Path, PathType } from '../../types';
 
 
 export type PickerProps = {
     onChange: (newPath: Path) => void;
-    foldersOnly: boolean;
+    foldersOnly?: boolean;
     currentPath: Path;
     label: string;
 }
@@ -24,24 +24,36 @@ enum PickerView {
     FOLDER_CONTENT
 }
 
-function getParentPath(path: string) {
-    const parts = path.split('/')
-    parts.pop()
-    return parts.join('/')
+function getParentPath(path: Path): Path {
+    if (path.pathString === '/') {
+        return path
+    }
+    const pathParts = path.pathString.split('/')
+    pathParts.pop()
+    const parentPath = pathParts.join('/')
+    return {
+        pathString: parentPath,
+        pathType: PathType.Folder
+    }
 }
 
 export default function Picker({ onChange, foldersOnly, currentPath, label }: PickerProps) {
-    const [items, setItems] = useState<FolderContentItem[]>([])
+    const [items, setItems] = useState<Path[]>([])
     const [pickerView, setPickerView] = useState<PickerView>(PickerView.FOLDER_CONTENT)
 
     const [favorites, setFavorites] = useFavorites()
     const drives = useDrives()
     
     useEffect(() => {
-        if (currentPath.type === 'file') {
-            return
+        let pathToShowItems: Path
+        if (currentPath.pathType === PathType.File) {
+            pathToShowItems = getParentPath(currentPath)
+        } else {
+            pathToShowItems = currentPath
         }
-        invoke<FolderContentItem[]>('list_folder_items', { path: currentPath.path }).then(items => {
+        console.log('viewing folder', pathToShowItems)
+        invoke<Path[]>('list_folder_items', { path: pathToShowItems} ).then(items => {
+            console.log('folder content: ', items)   
             setItems(items)
         }).catch(err => {
             console.error(err)
@@ -49,16 +61,12 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
     }, [currentPath])
 
     const handleBack = () => {
-        const newPath: Path = {
-            path: getParentPath(currentPath.path),
-            type: 'folder'
-        }
-        onChange(newPath)
+        onChange(getParentPath(currentPath))
     }
 
     const handleAddToFavorites = () => {
         setFavorites(favs => {
-            if (favs.find(fav => fav.path === currentPath.path)) {
+            if (favs.find(fav => fav.pathString === currentPath.pathString)) {
                 return favs
             }
             return [...favs, currentPath]
@@ -70,7 +78,7 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
     }
 
     const handleRemoveFavorite = (path: Path) => {
-        setFavorites(favs => favs.filter(fav => fav.path !== path.path))
+        setFavorites(favs => favs.filter(fav => fav.pathString !== path.pathString))
     }
 
     const goToPath = (path: Path) => {
@@ -118,33 +126,23 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
             {/* Path and back button */}
             <div className="flex justify-start gap-1 items-stretch">
                 <BackButton onClick={handleBack} />
-                <PathDisplay path={currentPath.path} />
+                <PathDisplay path={currentPath.pathString} />
             </div>
 
             {/* List of items from selected path, drives or favorites */}
 
             {pickerView == PickerView.FOLDER_CONTENT && 
                 <PickerList>
-                    {items.filter(item => !foldersOnly || foldersOnly && item.isFolder).map(item => {
-                        let newPath: Path
+                    {items.filter(item => !foldersOnly || foldersOnly && item.pathType == PathType.Folder).map(item => {
 
-                        if (currentPath.type == 'folder') {
-                            newPath = { path: currentPath.path + '/' + item.name, type: item.isFolder ? 'folder' : 'file' }
-        
-                        } else {
-                            newPath = { path: getParentPath(currentPath.path)+ '/' + item.name, type: item.isFolder ? 'folder' : 'file' }
-
-                        }
-
-                        const icon = item.isFolder ? '📁' : '📄'
-                        const text = icon + ' ' + item.name
-                        const pathSelected = currentPath.type == 'file' && currentPath.path == getParentPath(currentPath.path) + '/' + item.name
+                        const icon = item.pathType == PathType.Folder ? '📁' : '📄'
+                        const text = icon + ' ' + item.pathString.split('/').pop()
                         return (
                             <PickerListItem 
-                                key={item.name} 
+                                key={item.pathString} 
                                 text={text} 
-                                selected={pathSelected} 
-                                onClick={() => onChange(newPath)}
+                                selected={item.pathString === currentPath.pathString} 
+                                onClick={() => onChange(item)}
                                 showRemoveButton={false}
                             />
                         )
@@ -156,8 +154,8 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
                 <PickerList>
                     {favorites.map(f => 
                         <PickerListItem
-                            key={f.path}
-                            text={f.path}
+                            key={f.pathString}
+                            text={f.pathString}
                             selected={false}
                             showRemoveButton={true}
                             onRemove={() => handleRemoveFavorite(f)}
@@ -171,11 +169,11 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
                 <PickerList>
                     {drives.map(drive => 
                         <PickerListItem
-                            key={drive}
-                            text={drive}
+                            key={drive.pathString}
+                            text={drive.pathString}
                             selected={false}
                             showRemoveButton={false}
-                            onClick={() => goToPath({ path: drive, type: 'folder' })}
+                            onClick={() => goToPath(drive)}
                             />
                     )}
                 </PickerList>

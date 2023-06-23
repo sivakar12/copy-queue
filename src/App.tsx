@@ -4,11 +4,7 @@ import { listen } from '@tauri-apps/api/event'
 import Picker from "./components/picker/Picker";
 import Queue from "./components/queue/Queue";
 import { useEffect, useState } from 'react';
-import { Path, Queue as QueueType, CopyProgress, QueueItem } from './types';
-
-
-
-
+import { Path, Queue as QueueType, CopyProgress, Operation, PathType, OperationType } from './types';
 
 function Button({ onClick, label }: { onClick: () => void, label: string }) {
   return (
@@ -20,15 +16,14 @@ function Button({ onClick, label }: { onClick: () => void, label: string }) {
 
 
 function App() {
-  const startingPath: Path = { path: '/', type: 'folder'}
+  const startingPath: Path = { pathString: '/', pathType: PathType.Folder}
   const [sourcePath, setSourcePath] = useState<Path>(startingPath) // file or folder
   const [destinationPath, setDestinationPath] = useState<Path>(startingPath) // folder
 
   const [queue, setQueue] = useState<QueueType>({});
 
   useEffect(() => {
-    invoke<string>('get_home_folder_path').then(pathString => {
-      const path: Path = { path: pathString, type: 'folder' }
+    invoke<Path>('get_home_folder_path').then(path => {
       setSourcePath(path)
       setDestinationPath(path)
     })
@@ -37,9 +32,10 @@ function App() {
   useEffect(() => {
     const unlisten = listen<CopyProgress>('file-copy-progress', (data) => {
       const copyProgrssData = data.payload;
-      console.log(copyProgrssData)
+      console.log('copy progress data', copyProgrssData)
+      
       setQueue((prevQueue) => {
-        const queueItem = prevQueue[copyProgrssData.id]
+        const queueItem = prevQueue[copyProgrssData.operationId]
         const newQueueItem = {
           ...queueItem,
           totalBytes: copyProgrssData.totalBytes,
@@ -47,7 +43,7 @@ function App() {
         }
         return {
           ...prevQueue,
-          [copyProgrssData.id]: newQueueItem
+          [copyProgrssData.operationId]: newQueueItem
         }
       })
     })
@@ -57,26 +53,31 @@ function App() {
   const handleAdd = () => {
     // TODO: What is a better id string?
     const timestampString = new Date().getTime().toString()
-    const newQueueItem: QueueItem = {
+    const newOperation: Operation = {
       id: timestampString,
-      source: sourcePath.path,
-      destination: destinationPath.path,
+      source: sourcePath,
+      destination: destinationPath,
+      operationType: OperationType.Copy,
+      isAtomic: true,     // TODO: This is for testing only
     }
     setQueue({
       ...queue,
-      [newQueueItem.id]: newQueueItem
+      [newOperation.id]: newOperation
     })
   }
 
   const handleStartCopying = () => {
     // This copies only the first item in the queue for now.
     const firstItem = Object.values(queue)[0]
-    const destinationFilePath = destinationPath.path + '/' + firstItem.source.split('/').pop()
+    const destinationFilePath = destinationPath.pathString + '/' + firstItem.source.pathString.split('/').pop()
+
     invoke('copy_one_file', {
-      copyRequest: {
-        id: firstItem.id,
-        source: firstItem.source,
-        destination: destinationFilePath
+      operation: {
+        ...firstItem,
+        destination: {
+          ...firstItem.destination,
+          pathString: destinationFilePath
+        } 
       }
     })
   }

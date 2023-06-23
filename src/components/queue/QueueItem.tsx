@@ -1,10 +1,10 @@
-import { QueueItem as QueueItemType } from '../../App';
+import { Operation } from '../../types';
 import RoundCloseButton from '../common/RoundCloseButton';
 import PathDisplay from './PathDisplay';
 import ProgressBar from './ProgressBar';
 
 type QueueItemProps = {
-    item: QueueItemType;
+    item: Operation;
     onCancel : () => void;
 }
 
@@ -25,8 +25,8 @@ export default function({ item, onCancel }: QueueItemProps ) {
             <div className="flex flex-row justify-stretch"> {/* Labels and paths and fractions */}
 
                 <PathDisplay 
-                    source={item.source}
-                    destination={item.destination}
+                    source={item.source.pathString}
+                    destination={item.destination.pathString}
                 />
                 {/* {item.filesCopied && item.bytesCopied && item.totalBytes && item.totalFiles &&  */}
                 {item.bytesCopied && item.totalBytes && 

@@ -1,18 +1,39 @@
+export enum PathType {
+  Folder = "folder",
+  File = "file"
+}
 export type Path = {
-  path: string;
-  type: 'folder' | 'file';
+  pathString: string;
+  pathType: PathType
+}
+
+export enum CopyProgressType {
+  Progress = "progress",
+  Complete = "complete",
+  Error = "error"
 }
 
 export type CopyProgress = {
-  id: string;
+  operationId: string;
   totalBytes: number;
   bytesCopied: number;
+  copyProgressType: CopyProgressType
 }
 
-export type QueueItem = {
+export enum OperationType {
+  Copy = "copy",
+  Move = "move",
+  CreateFolder = "createFolder",
+  Delete = "delete"
+}
+
+export type Operation = {
   id: string;
-  source: string;
-  destination: string;
+  source: Path;
+  destination: Path;
+  operationType: OperationType;
+  splitOperations?: Operation[];
+  isAtomic: boolean;
   totalBytes?: number;
   bytesCopied?: number;
   filesCopied?: number;
@@ -20,10 +41,5 @@ export type QueueItem = {
 };
 
 export type Queue = {
-  [id: string]: QueueItem;
-}
-
-export type FolderContentItem = {
-    name: string;
-    isFolder: boolean;
+  [id: string]: Operation;
 }
