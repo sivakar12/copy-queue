@@ -103,7 +103,7 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
     }
 
     return (
-        <div className="flex flex-col items-stretch m-2 p-2 bg-gray-100 dark:bg-gray-800 dark:text-white rounded-md opacity-75">
+        <div className="flex flex-col h-[40vh] items-stretch m-2 p-2 bg-gray-100 dark:bg-gray-800 dark:text-white rounded-md opacity-75">
             
             {/* Top bar with label and menu items */}
             <div className="flex justify-between items-center">
