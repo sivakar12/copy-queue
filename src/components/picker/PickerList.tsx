@@ -25,15 +25,16 @@ export function PickerListItem({ text, selected, onClick, showRemoveButton, onRe
     className += " text-gray-800 p-1 my-1 rounded-md overflow-hidden"
     if (showRemoveButton && onRemove) {
         // TODO: Fix alignment
-        className += " flex flex-row justify-between"
+        className += " flex flex-row justify-between items-center"
         return (
             <div className={className} onClick={onClick}>
                 <div className="text-gray-700 dark:text-gray-300">{text}</div>
                 <RoundCloseButton onClick={onRemove}/>
             </div>
         )
+    } else {
+        return (
+            <div className={className} onClick={onClick}>{text}</div>
+        )
     }
-    return (
-        <div className={className} onClick={onClick}>{text}</div>
-    )
 }

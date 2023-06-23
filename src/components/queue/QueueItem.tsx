@@ -36,7 +36,7 @@ export default function({ item, onCancel }: QueueItemProps ) {
                     </div>
                 }
             </div>
-            <div className="flex flex-row gap-1"> {/* Progress bar and cancel button */}
+            <div className="flex flex-row gap-1 items-center"> {/* Progress bar and cancel button */}
                 <div className="flex-1">
                     <ProgressBar progress={progress} />
                 </div>
