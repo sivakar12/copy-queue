@@ -27,6 +27,7 @@ fn main() {
             commands::list_folder_items, 
             commands::copy_one_file,
             commands::get_drives,
+            commands::get_tree,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

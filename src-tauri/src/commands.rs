@@ -110,3 +110,22 @@ pub fn get_drives() -> Result<Vec<String>, String> {
     items.sort_by(|a, b| a.name.cmp(&b.name));
     Ok(items)
 }
+
+#[tauri::command(async)]
+pub fn get_tree(path: Path) -> Result<Vec<Path>, String> {
+    let mut items = Vec::new();
+
+    for entry_result in fs::read_dir(path.path_string).map_err(|e| format!("Error reading directory: {}", e))? {
+        let entry = entry_result.map_err(|e| format!("Error processing entry: {}", e))?;
+        let metadata = entry.metadata().map_err(|e| format!("Error getting metadata: {}", e))?;
+        let path_string = entry.file_name().into_string().unwrap_or_default();
+        let path_type = if metadata.is_dir() { PathType::Folder } else { PathType::File };
+
+        items.push(Path {
+            path_string,
+            path_type
+        });
+    }
+    items.sort_by(|a, b| a.path_string.cmp(&b.path_string));
+    Ok(items)
+}

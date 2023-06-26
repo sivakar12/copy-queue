@@ -5,6 +5,7 @@ import Picker from "./components/picker/Picker";
 import Queue from "./components/queue/Queue";
 import { useEffect, useState } from 'react';
 import { Path, Queue as QueueType, CopyProgress, Operation, PathType, OperationType } from './types';
+import { getSplitOperations } from './utils/splitOperations';
 
 function Button({ onClick, label }: { onClick: () => void, label: string }) {
   return (
@@ -49,6 +50,24 @@ function App() {
     })
     return () => { unlisten.then(u => u()) }
   }, [])
+
+  useEffect(() => {
+    for (const operation of Object.values(queue)) {
+      if (!operation.splitOperations || ! operation.splitOperations.length) {
+        getSplitOperations(operation).then(splitOperations => {
+          const previousQueueItem = queue[operation.id]
+          const newQueueItem = {
+            ...previousQueueItem,
+            splitOperations
+          }
+          setQueue({
+            ...queue,
+            [operation.id]: newQueueItem
+          })
+        })
+      }
+    }
+  }, [queue])
 
   const handleAdd = () => {
     // TODO: What is a better id string?

@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Operation } from '../../types';
 import RoundCloseButton from '../common/RoundCloseButton';
 import PathDisplay from './PathDisplay';
 import ProgressBar from './ProgressBar';
+import { OperationList, OperationListItem } from './OperationsList';
 
 type QueueItemProps = {
     item: Operation;
@@ -18,6 +20,8 @@ function Fraction({ numerator, denominator, type }: { numerator: number, denomin
 
 export default function({ item, onCancel }: QueueItemProps ) {
     const progress = item.bytesCopied && item.totalBytes ?  item.bytesCopied / item.totalBytes * 100 : 0;
+
+    const [showOperationsList, setShowOperationsList] = useState(true);
 
     return (
         
@@ -36,6 +40,9 @@ export default function({ item, onCancel }: QueueItemProps ) {
                     </div>
                 }
             </div>
+
+            
+
             <div className="flex flex-row gap-1 items-center"> {/* Progress bar and cancel button */}
                 <div className="flex-1">
                     <ProgressBar progress={progress} />
@@ -45,6 +52,14 @@ export default function({ item, onCancel }: QueueItemProps ) {
                 </div>
             </div>
             {/* TODO: Add subtasks and toggle to see sub tasks */}
+
+            {showOperationsList && item.splitOperations && item.splitOperations.length > 0 && (
+                <OperationList>
+                    {item.splitOperations.map((operation) => (
+                        <OperationListItem key={operation.id} operation={operation} />
+                    ))}
+                </OperationList>
+            )}
         </div>
     )
 }
