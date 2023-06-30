@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 import { Operation, Path } from '../types';
 import { invoke } from '@tauri-apps/api';
 
-async function getTree(path: Path) {
+async function getTree(path: Path): Promise<Path[]> {
     return invoke<Path[]>('get_tree', { path })
 }
+
 export async function getSplitOperations(operation: Operation) {
     const tree = await getTree(operation.source)
     const splitOperations = tree.map((path) => {

@@ -9,7 +9,7 @@ import { getSplitOperations } from './utils/splitOperations';
 
 function Button({ onClick, label }: { onClick: () => void, label: string }) {
   return (
-    <div className="bg-blue-500 hover:bg-blue-700 text-white font-bold m-2 py-2 px-4 rounded" onClick={onClick}>
+    <div className="bg-blue-500 hover:bg-blue-700 text-white font-bold m-2 py-2 px-4 rounded inline-block" onClick={onClick}>
       {label}
     </div>
   )
@@ -102,9 +102,9 @@ function App() {
   }
 
   return (
-    <div className="container mx-auto h-screen">
-      <div className="flex m-1 p-1">
-        <div className="flex flex-col flex-1 overflow-hidden">
+    <div className="container mx-auto">
+      <div className="grid grid-cols-2 grid-rows-2 grid-gap-2">
+        <div className="">
           <Picker
             onChange={setSourcePath}
             label="Source Picker"
@@ -117,24 +117,21 @@ function App() {
             currentPath={destinationPath}
             foldersOnly={true}
           />
-          <div className='self-end'>
-            <Button onClick={handleAdd} label='Add'/>
-          </div>
         </div>
-        <div className="flex flex-col flex-1 justify-stretch">
-          <div className="flex-1 justify-stretch m-2">
-            <Queue
-              queue={queue}
-            />
-          </div>
-          <div className="flex">
+        <div className="">
+          <Queue
+            queue={queue}
+          />
+        </div>
+        <div className="self-right">
+          <Button onClick={handleAdd} label='Add'/>
+        </div>
+        <div className="">
             <Button label="Start Copying" onClick={handleStartCopying}/>
             <Button label="Clear All" onClick={() => {setQueue({})}}/>
-          </div>
         </div>
       </div>
-    </div>
-
+      </div>
   );
 }
 

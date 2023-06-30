@@ -54,7 +54,7 @@ export default function({ item, onCancel }: QueueItemProps ) {
             {/* TODO: Add subtasks and toggle to see sub tasks */}
 
             {showOperationsList && item.splitOperations && item.splitOperations.length > 0 && (
-                <OperationList>
+                <OperationList count={item.splitOperations?.length}>
                     {item.splitOperations.map((operation) => (
                         <OperationListItem key={operation.id} operation={operation} />
                     ))}

@@ -19,10 +19,10 @@ type OperationsSummaryToggleProps = {
 }
 
 function OperationsSummaryToggle({ operationsCount, onClick, showOperations } : OperationsSummaryToggleProps) {
-    const prefixSymbol = showOperations ? '⌄' : '>';
+    const prefixSymbol = showOperations ? '🔽' : '▶️';
     const text = `${prefixSymbol} ${operationsCount} ${operationsCount == 1 ? 'operation' : 'operations'}`;
     return (
-        <div className="text-sm" onClick={onClick}>
+        <div className="text-sm text-gray-700 py-2" onClick={onClick}>
             {text}
         </div>
     )
@@ -32,9 +32,9 @@ export function OperationList({ count, children } : { count: number, children: R
     const [showOperations, setShowOperations] = useState(false);
     const handleOnClick = () => setShowOperations(!showOperations);
     return (
-        <div className="overflow-auto">
+        <div className="">
             <OperationsSummaryToggle operationsCount={count} onClick={handleOnClick} showOperations={showOperations}/>
-            {showOperations && children}
+            {showOperations && (<div className="overflow-auto h-[30vh]">{children}</div>)}
         </div>
     )
 }
