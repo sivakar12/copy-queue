@@ -18,7 +18,7 @@ function OperationTypeBadge({ operationType } : {operationType: OperationType}) 
     }
 
     return (
-        <div className="flex basis-0 overflow-visible p-1 m-1 text-xs font-extrabold uppercase rounded-md bg-gray-200 dark:bg-gray-400">
+        <div className="flex basis-0 overflow-visible p-1 m-1 text-xs font-extrabold uppercase rounded-md bg-gray-400 dark:bg-gray-400">
             {stringForm}
         </div>
     )

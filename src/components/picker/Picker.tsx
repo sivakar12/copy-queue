@@ -124,7 +124,7 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
             </div>
 
             {/* Path and back button */}
-            <div className="flex justify-start gap-1 items-stretch">
+            <div className="flex justify-start m-1 gap-1 items-stretch">
                 <BackButton onClick={handleBack} />
                 <PathDisplay path={currentPath.pathString} />
             </div>
