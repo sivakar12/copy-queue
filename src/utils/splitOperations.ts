@@ -26,7 +26,10 @@ export async function getSplitOperations(operation: Operation): Promise<Operatio
     if (operation.source.pathType === PathType.Folder && operation.destination.pathType === PathType.Folder) {
       const tree = await getTree(operation.source)
       const splitOperations: Operation[] = tree.map((treeItem, index) => {
-          const destinationFilePath = operation.destination.pathString + '/' + treeItem.pathString.split('/').pop()
+          // TODO: use a cross platform path library
+          const relativePath = treeItem.pathString.replace(operation.source.pathString, '')
+          const folderName = operation.source.pathString.split('/').pop()
+          const destinationFilePath = operation.destination.pathString + '/' + folderName + relativePath
           if (treeItem.pathType === PathType.Folder) {
             return {
               id: operation.id + '-' + index,
