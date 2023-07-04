@@ -1,3 +1,5 @@
+import Immutable from "immutable";
+
 export enum PathType {
   Folder = "folder",
   File = "file"
@@ -32,14 +34,13 @@ export type Operation = {
   source: Path;
   destination: Path;
   operationType: OperationType;
-  splitOperations?: Operation[];
+  splitOperations?: Immutable.Map<string, Operation>;
   isAtomic: boolean;
   totalBytes?: number;
   bytesCopied?: number;
   filesCopied?: number;
   totalFiles?: number;
+  finished?: boolean;
 };
 
-export type Queue = {
-  [id: string]: Operation;
-}
+export type Queue = Immutable.Map<string, Operation>;

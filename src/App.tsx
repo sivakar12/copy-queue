@@ -4,8 +4,17 @@ import { listen } from '@tauri-apps/api/event'
 import Picker from "./components/picker/Picker";
 import Queue from "./components/queue/Queue";
 import { useEffect, useState } from 'react';
-import { Path, Queue as QueueType, CopyProgress, Operation, PathType, OperationType } from './types';
+import { 
+  Path,
+  Queue as QueueType,
+  CopyProgress,
+  Operation,
+  PathType,
+  OperationType,
+  CopyProgressType, 
+} from './types';
 import { getSplitOperations } from './utils/splitOperations';
+import Immutable from 'immutable';
 
 function Button({ onClick, label }: { onClick: () => void, label: string }) {
   return (
@@ -21,8 +30,9 @@ function App() {
   const [sourcePath, setSourcePath] = useState<Path>(startingPath) // file or folder
   const [destinationPath, setDestinationPath] = useState<Path>(startingPath) // folder
 
-  const [queue, setQueue] = useState<QueueType>({});
+  const [queue, setQueue] = useState<Immutable.Map<string, Operation>>(Immutable.Map());
 
+  // Get home folder path on loads
   useEffect(() => {
     invoke<Path>('get_home_folder_path').then(path => {
       setSourcePath(path)
@@ -30,44 +40,32 @@ function App() {
     })
   }, [])
 
+  // Listen for copy progress events
+  // Only set inner values not, not the parent's
   useEffect(() => {
     const unlisten = listen<CopyProgress>('file-copy-progress', (data) => {
       const copyProgrssData = data.payload;
       console.log('copy progress data', copyProgrssData)
       
-      setQueue((prevQueue) => {
-        const queueItem = prevQueue[copyProgrssData.operationId]
-        const newQueueItem = {
-          ...queueItem,
-          totalBytes: copyProgrssData.totalBytes,
-          bytesCopied: copyProgrssData.bytesCopied,
+      setQueue(queue => {
+        const parentOperationId = copyProgrssData.operationId.split('-')[0]
+        const path = [parentOperationId, 'splitOperations', copyProgrssData.operationId]
+        let newQueue = queue.setIn([...path, 'bytesCopied'], copyProgrssData.bytesCopied)
+        newQueue = newQueue.setIn([...path, 'totalBytes'], copyProgrssData.totalBytes)
+        if (copyProgrssData.copyProgressType === CopyProgressType.Complete) {
+          newQueue = newQueue.setIn([...path, 'finished'], true)
         }
-        return {
-          ...prevQueue,
-          [copyProgrssData.operationId]: newQueueItem
-        }
+        console.log('path for update', path)
+        console.log('new queue', newQueue.toJS())
+        return newQueue
       })
+      
+      if (copyProgrssData.copyProgressType === CopyProgressType.Complete) {
+        runOneOperationFromQueue()
+      }
     })
     return () => { unlisten.then(u => u()) }
   }, [])
-
-  useEffect(() => {
-    for (const operation of Object.values(queue)) {
-      if (!operation.splitOperations || ! operation.splitOperations.length) {
-        getSplitOperations(operation).then(splitOperations => {
-          const previousQueueItem = queue[operation.id]
-          const newQueueItem = {
-            ...previousQueueItem,
-            splitOperations
-          }
-          setQueue({
-            ...queue,
-            [operation.id]: newQueueItem
-          })
-        })
-      }
-    }
-  }, [queue])
 
   const handleAdd = () => {
     // TODO: What is a better id string?
@@ -79,26 +77,45 @@ function App() {
       operationType: OperationType.Copy,
       isAtomic: true,     // TODO: This is for testing only
     }
-    setQueue({
-      ...queue,
-      [newOperation.id]: newOperation
+    let newQueue = queue.set(newOperation.id, newOperation)
+    getSplitOperations(newOperation).then((splitOperations) => {
+      console.log(splitOperations)
+      const splitOperationsMap = Immutable.Map(splitOperations.map((splitOperation) => [splitOperation.id, splitOperation]))
+      newQueue = newQueue.setIn([newOperation.id, 'splitOperations'], splitOperationsMap)
+      setQueue(newQueue)
     })
   }
 
-  const handleStartCopying = () => {
-    // This copies only the first item in the queue for now.
-    const firstItem = Object.values(queue)[0]
-    const destinationFilePath = destinationPath.pathString + '/' + firstItem.source.pathString.split('/').pop()
-
-    invoke('copy_one_file', {
-      operation: {
-        ...firstItem,
-        destination: {
-          ...firstItem.destination,
-          pathString: destinationFilePath
-        } 
+  const runOneOperationFromQueue = async () => {
+    console.log('queue', queue.toJS())
+    // get all the split operations in a list
+    const splitOperations: Operation[] = []
+    // TODO: Write this in functional style
+    queue.forEach((operation) => {
+      if (operation.splitOperations) {
+        operation.splitOperations.forEach((splitOperation) => {
+          splitOperations.push(splitOperation)
+        })
       }
     })
+    // sort split operations by id which is a string
+    const splitOperationsSorted = splitOperations.sort((a, b) => {
+      if (a.id < b.id) {
+        return -1
+      } else if (a.id > b.id) {
+        return 1
+      } else {
+        return 0
+      }
+    })
+    console.log(splitOperationsSorted)
+    // get the first non complete split operation
+    const nonComplete = splitOperationsSorted.filter((splitOperation) =>  !splitOperation.finished)
+    await invoke('run_atomic_operation', { operation: nonComplete[0] } )
+  }
+
+  const handleStart = () => {
+    runOneOperationFromQueue()
   }
 
   return (
@@ -127,11 +144,15 @@ function App() {
           <Button onClick={handleAdd} label='Add'/>
         </div>
         <div className="">
-            <Button label="Start Copying" onClick={handleStartCopying}/>
-            <Button label="Clear All" onClick={() => {setQueue({})}}/>
+            <Button label="Start" onClick={handleStart}/>
+            <Button label="Clear" onClick={() => {setQueue(Immutable.Map())}}/>
+            <Button label="Run One" onClick={runOneOperationFromQueue}/>
         </div>
       </div>
+      <div className="break-all dark:text-white">
+        {JSON.stringify(queue)}
       </div>
+    </div>
   );
 }
 

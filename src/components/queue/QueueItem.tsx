@@ -19,10 +19,19 @@ function Fraction({ numerator, denominator, type }: { numerator: number, denomin
 }
 
 export default function({ item, onCancel }: QueueItemProps ) {
-    const progress = item.bytesCopied && item.totalBytes ?  item.bytesCopied / item.totalBytes * 100 : 0;
+    const totalBytes = item.splitOperations?.reduce((acc, op) => acc + (op.totalBytes || 0), 0);
+    const bytesCopied = item.splitOperations?.reduce((acc, op) => acc + (op.bytesCopied || 0), 0);
+    const progress = bytesCopied || 0 / (totalBytes || 1) * 100;
 
-    const [showOperationsList, setShowOperationsList] = useState(true);
-
+    const comparator = (a: Operation, b: Operation) => {
+        if (a.id < b.id) {
+          return -1
+        } else if (a.id > b.id) {
+          return 1
+        } else {
+          return 0
+        }
+      }
     return (
         
         <div className="flex flex-col p-2 my-1 rounded-md bg-gray-200 dark:bg-gray-700">
@@ -42,21 +51,23 @@ export default function({ item, onCancel }: QueueItemProps ) {
             </div>
 
             
+            <ProgressBar progress={progress} />
 
-            <div className="flex flex-row gap-1 items-center"> {/* Progress bar and cancel button */}
+            {/* Progress bar and cancel button */}
+            {/* <div className="flex flex-row gap-1 items-center"> 
                 <div className="flex-1">
                     <ProgressBar progress={progress} />
                 </div>
                 <div className="flex-none">
                     <RoundCloseButton onClick={onCancel}/>
                 </div>
-            </div>
-            {/* TODO: Add subtasks and toggle to see sub tasks */}
-
-            {showOperationsList && item.splitOperations && item.splitOperations.length > 0 && (
-                <OperationList count={item.splitOperations?.length}>
-                    {item.splitOperations.map((operation) => (
-                        <OperationListItem key={operation.id} operation={operation} />
+            </div> */}
+            
+            {/* {JSON.stringify(item.splitOperations)}  */}
+            {item.splitOperations && item.splitOperations.size > 0 && (
+                <OperationList count={item.splitOperations.size} >
+                    {item.splitOperations.sort(comparator).entrySeq().map(([id, operation]) => (
+                        <OperationListItem key={id} operation={operation} />
                     ))}
                 </OperationList>
             )}

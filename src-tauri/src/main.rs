@@ -25,7 +25,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             commands::get_home_folder_path, 
             commands::list_folder_items, 
-            commands::copy_one_file,
+            commands::run_atomic_operation,
             commands::get_drives,
             commands::get_tree,
         ])

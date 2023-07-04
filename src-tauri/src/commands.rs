@@ -13,6 +13,7 @@ use crate::types::{
     CopyProgressType,
     Path,
     PathType,
+    OperationType,
 };
 
 use crate::utils;
@@ -46,32 +47,51 @@ pub fn list_folder_items(path: Path) -> Result<Vec<Path>, String> {
     items.sort_by(|a, b| a.path_string.cmp(&b.path_string));
     Ok(items)
 }
-
 #[tauri::command(async)]
-pub fn copy_one_file(operation: Operation, app_handle: tauri::AppHandle) {
+pub fn run_atomic_operation(operation: Operation, app_handle: tauri::AppHandle) {
     assert_eq!(operation.is_atomic, true, "Operation must be atomic to copy with progress.");
+    
+    
+    match operation.operation_type {
+        OperationType::Copy => {
+            let (progress_sender, progress_receiver) = mpsc::channel::<CopyProgress>();
+            
+            std::thread::spawn(move || {
+                _ = utils::copy_with_progress(&operation, progress_sender);
+            });
 
-    let (progress_sender, progress_receiver) = mpsc::channel::<CopyProgress>();
+            let mut last_sent = Instant::now();
+            let interval = Duration::from_millis(100);
+            
+            
+            for progress in progress_receiver {
+                
+                // Rate limit progress updates to once every 100ms.
+                let now = Instant::now();
+                if (now - last_sent) < interval && 
+                progress.copy_progress_type == CopyProgressType::Progress {
+                    continue;
+                }
+                app_handle.emit_all("file-copy-progress", Some(progress)).unwrap();
+                last_sent = now;
+            }
+        },
+        OperationType::CreateFolder => {
+            let _ = fs::create_dir_all(&operation.destination.path_string);
+            
+            // TODO: Turn copy progress into an algebraic data type so bytes copied can be left out
+            let progress: CopyProgress = CopyProgress {
+                operation_id: operation.id.clone(),
+                copy_progress_type: CopyProgressType::Complete,
+                bytes_copied: 1,
+                total_bytes: 1
+            };
+            app_handle.emit_all("file-copy-progress", Some(progress)).unwrap();
 
-    std::thread::spawn(move || {
-        _ = utils::copy_with_progress(&operation, progress_sender);
-    });
-
-    let mut last_sent = Instant::now();
-    let interval = Duration::from_millis(100);
-
-
-    for progress in progress_receiver {
-
-        // Rate limit progress updates to once every 100ms.
-        let now = Instant::now();
-        if (now - last_sent) < interval && 
-            progress.copy_progress_type == CopyProgressType::Progress {
-            continue;
-        }
-        app_handle.emit_all("file-copy-progress", Some(progress)).unwrap();
-        last_sent = now;
+        },
+        _ => {}
     }
+
 }
 
 #[tauri::command(async)]
