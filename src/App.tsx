@@ -3,7 +3,7 @@ import { listen } from '@tauri-apps/api/event'
 
 import Picker from "./components/picker/Picker";
 import Queue from "./components/queue/Queue";
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { 
   Path,
   Queue as QueueType,
@@ -14,7 +14,7 @@ import {
   CopyProgressType, 
 } from './types';
 import { getSplitOperations } from './utils/splitOperations';
-import Immutable from 'immutable';
+import Immutable, { set } from 'immutable';
 import Button from './components/common/Button';
 
 function App() {
@@ -23,6 +23,11 @@ function App() {
   const [destinationPath, setDestinationPath] = useState<Path>(startingPath) // folder
 
   const [queue, setQueue] = useState<Immutable.Map<string, Operation>>(Immutable.Map());
+
+  const queueRef = useRef(queue);
+  useEffect(() => {
+    queueRef.current = queue;
+  }, [queue])
 
   // Get home folder path on loads
   useEffect(() => {
@@ -39,18 +44,19 @@ function App() {
       const copyProgrssData = data.payload;
       console.log('copy progress data', copyProgrssData)
       
-      setQueue(queue => {
+      // setQueue(queue => {
         const parentOperationId = copyProgrssData.operationId.split('-')[0]
         const path = [parentOperationId, 'splitOperations', copyProgrssData.operationId]
-        let newQueue = queue.setIn([...path, 'bytesCopied'], copyProgrssData.bytesCopied)
+        let newQueue = queueRef.current.setIn([...path, 'bytesCopied'], copyProgrssData.bytesCopied)
         newQueue = newQueue.setIn([...path, 'totalBytes'], copyProgrssData.totalBytes)
         if (copyProgrssData.copyProgressType === CopyProgressType.Complete) {
           newQueue = newQueue.setIn([...path, 'finished'], true)
         }
         console.log('path for update', path)
         console.log('new queue', newQueue.toJS())
-        return newQueue
-      })
+        setQueue(newQueue)
+        // return newQueue
+      // })
       
       if (copyProgrssData.copyProgressType === CopyProgressType.Complete) {
         runOneOperationFromQueue()
@@ -79,11 +85,11 @@ function App() {
   }
 
   const runOneOperationFromQueue = async () => {
-    console.log('queue', queue.toJS())
+    console.log('queue', queueRef.current.toJS())
     // get all the split operations in a list
     const splitOperations: Operation[] = []
     // TODO: Write this in functional style
-    queue.forEach((operation) => {
+    queueRef.current.forEach((operation) => {
       if (operation.splitOperations) {
         operation.splitOperations.forEach((splitOperation) => {
           splitOperations.push(splitOperation)
