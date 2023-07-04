@@ -15,15 +15,7 @@ import {
 } from './types';
 import { getSplitOperations } from './utils/splitOperations';
 import Immutable from 'immutable';
-
-function Button({ onClick, label }: { onClick: () => void, label: string }) {
-  return (
-    <div className="bg-blue-500 hover:bg-blue-700 text-white font-bold m-2 py-2 px-4 rounded inline-block" onClick={onClick}>
-      {label}
-    </div>
-  )
-}
-
+import Button from './components/common/Button';
 
 function App() {
   const startingPath: Path = { pathString: '/', pathType: PathType.Folder}
@@ -108,7 +100,6 @@ function App() {
         return 0
       }
     })
-    console.log(splitOperationsSorted)
     // get the first non complete split operation
     const nonComplete = splitOperationsSorted.filter((splitOperation) =>  !splitOperation.finished)
     await invoke('run_atomic_operation', { operation: nonComplete[0] } )
@@ -146,11 +137,7 @@ function App() {
         <div className="">
             <Button label="Start" onClick={handleStart}/>
             <Button label="Clear" onClick={() => {setQueue(Immutable.Map())}}/>
-            <Button label="Run One" onClick={runOneOperationFromQueue}/>
         </div>
-      </div>
-      <div className="break-all dark:text-white">
-        {JSON.stringify(queue)}
       </div>
     </div>
   );

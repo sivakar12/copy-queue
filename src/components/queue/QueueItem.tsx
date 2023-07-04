@@ -1,6 +1,4 @@
-import { useState } from 'react';
 import { Operation } from '../../types';
-import RoundCloseButton from '../common/RoundCloseButton';
 import PathDisplay from './PathDisplay';
 import ProgressBar from './ProgressBar';
 import { OperationList, OperationListItem } from './OperationsList';
@@ -21,7 +19,7 @@ function Fraction({ numerator, denominator, type }: { numerator: number, denomin
 export default function({ item, onCancel }: QueueItemProps ) {
     const totalBytes = item.splitOperations?.reduce((acc, op) => acc + (op.totalBytes || 0), 0);
     const bytesCopied = item.splitOperations?.reduce((acc, op) => acc + (op.bytesCopied || 0), 0);
-    const progress = bytesCopied || 0 / (totalBytes || 1) * 100;
+    const progress = (bytesCopied || 0) / (totalBytes || 1) * 100;
 
     const comparator = (a: Operation, b: Operation) => {
         if (a.id < b.id) {

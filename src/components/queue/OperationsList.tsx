@@ -34,7 +34,7 @@ function OperationFileDisplay({ pathString } : { pathString: string }) {
 
 export function OperationListItem({ operation } : { operation: Operation }) {
     // TODO: Remove hardcoded things
-    const progress = operation.bytesCopied || 0 / (operation.totalBytes || 1) * 100;
+    const progress = (operation.bytesCopied || 0) / (operation.totalBytes || 1) * 100;
     const complete = operation.bytesCopied && operation.bytesCopied == operation.totalBytes;
     return (
         <div className="my-1 flex flex-col items-stretch">
