@@ -15,5 +15,11 @@ Here, we make choosing source, choosing destination and running the copying inde
 
 Installers are available at [releases page](https://github.com/sivakar12/copy-queue/releases)
 
-To run in development mode, use
+To run in development mode use
 `npm run tauri dev`
+in a system that has Node.js and Rust installed
+
+
+## Screenshots
+![Screenshot 1](screenshots/screenshot-1.png)
+![Screenshot 2](screenshots/screenshot-2.png)
