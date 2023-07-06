@@ -1,10 +1,13 @@
 # Copy Queue
 
-Copying more than one file or filder at the same time clutters the screen. There are many windows open. Going back and forth to the same set of folders is also frustrating work. And copying all happens in parallel by default which can be sometimes inefficient. 
+A better UI/UX for those who copy and paste a lot of files and folders. 
 
-In this single window application, you pick source and destination quickly and add them to the queue. Then click start and let it copy one by one. 
+Problems with using the OS's file manager to copy and paste
+- Parallel copy is slow operation
+  - You can choose speed but then you have to wait for one operation to finish before starting the next
+  - Or, you can start the next while copying is in progress and all operations slow done.
+- Too many windows are open. You go back and forth. Context switching is mentally taxing.
 
-More time-saving features to come..
 
 ## How to run
 
