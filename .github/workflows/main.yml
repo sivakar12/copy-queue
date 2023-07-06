@@ -1,0 +1,46 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build_and_release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        # os: [macos-latest, windows-latest, ubuntu-latest]
+        os: [macos-latest, windows-latest]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '19'
+
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+
+    - name: Install Tauri CLI
+      run: npm install -g @tauri-apps/cli
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build Tauri App
+      run: npm run tauri build
+
+    - name: Publish Artifacts
+      uses: softprops/action-gh-release@v1
+      with:
+        files: 'src-tauri/target/release/*'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
