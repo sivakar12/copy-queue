@@ -121,13 +121,13 @@ function App() {
         <div className="">
           <Picker
             onChange={setSourcePath}
-            label="Source Picker"
+            label="Source"
             currentPath={sourcePath}
             foldersOnly={false}
           />
           <Picker
             onChange={setDestinationPath}
-            label="Destination Picker"
+            label="Destination"
             currentPath={destinationPath}
             foldersOnly={true}
           />
