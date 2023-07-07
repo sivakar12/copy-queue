@@ -6,6 +6,7 @@ use tauri::Manager;
 use walkdir::WalkDir;
 use std::fs;
 use std::sync::mpsc;
+use mountpoints;
 
 use crate::types::{
     Operation,
@@ -26,6 +27,7 @@ pub fn get_home_folder_path() -> Result<Path, String> {
     Ok(Path {
         path_string: home_folder_string,
         path_type: PathType::Folder,
+        size: None,
     })
 }
 
@@ -42,6 +44,7 @@ pub fn list_folder_items(path: Path) -> Result<Vec<Path>, String> {
         items.push(Path {
             path_string: file_name.into_string().unwrap_or_default(),
             path_type: if is_folder { PathType::Folder } else { PathType::File },
+            size: None
         });
     }
     items.sort_by(|a, b| a.path_string.cmp(&b.path_string));
@@ -94,17 +97,36 @@ pub fn run_atomic_operation(operation: Operation, app_handle: tauri::AppHandle) 
 
 }
 
+// #[tauri::command(async)]
+// #[cfg(target_os = "macos")]
+// pub fn get_drives() -> Result<Vec<Path>, String> {
+//     let mut items: Vec<Path> = Vec::new();
+
+//     for entry_result in fs::read_dir("/Volumes").map_err(|e| format!("Error reading directory: {}", e))? {
+//         let entry = entry_result.map_err(|e| format!("Error processing entry: {}", e))?;
+//         let path_string = entry.path().display().to_string();
+//         let path = Path {
+//             path_string,
+//             path_type: PathType::Folder,
+//             size: None,
+//         };
+//         items.push(path)
+//     }
+
+//     Ok(items)
+// }
+
 #[tauri::command(async)]
-#[cfg(target_os = "macos")]
+// #[cfg(target_os = "windows")]
 pub fn get_drives() -> Result<Vec<Path>, String> {
     let mut items: Vec<Path> = Vec::new();
 
-    for entry_result in fs::read_dir("/Volumes").map_err(|e| format!("Error reading directory: {}", e))? {
-        let entry = entry_result.map_err(|e| format!("Error processing entry: {}", e))?;
-        let path_string = entry.path().display().to_string();
+    for mount_info in mountpoints::mountinfos().map_err(|e| format!("Error reading directory: {}", e))? {
+        let path_string = mount_info.path.as_os_str().to_str().unwrap().to_string();
         let path = Path {
-            path_string,
+            path_string: path_string,
             path_type: PathType::Folder,
+            size: None,
         };
         items.push(path)
     }
@@ -112,25 +134,6 @@ pub fn get_drives() -> Result<Vec<Path>, String> {
     Ok(items)
 }
 
-#[tauri::command(async)]
-#[cfg(target_os = "windows")]
-pub fn get_drives() -> Result<Vec<String>, String> {
-    let mut items = Vec::new();
-
-    for entry_result in fs::read_dir("C:\\").map_err(|e| format!("Error reading directory: {}", e))? {
-        let entry = entry_result.map_err(|e| format!("Error processing entry: {}", e))?;
-        let metadata = entry.metadata().map_err(|e| format!("Error getting metadata: {}", e))?;
-        let file_name = entry.file_name();
-        let is_folder = true;
-
-        items.push(FolderItem {
-            name: file_name.into_string().unwrap_or_default(),
-            is_folder,
-        });
-    }
-    items.sort_by(|a, b| a.name.cmp(&b.name));
-    Ok(items)
-}
 
 #[tauri::command(async)]
 pub fn get_tree(path: Path) -> Result<Vec<Path>, String> {
@@ -139,10 +142,11 @@ pub fn get_tree(path: Path) -> Result<Vec<Path>, String> {
         let metadata = entry.metadata().map_err(|e| format!("Error getting metadata: {}", e))?;
         let path_string = entry.path().as_os_str().to_str().unwrap().to_string();
         let path_type = if metadata.is_dir() { PathType::Folder } else { PathType::File };
-
+        let size = if metadata.is_file() { Some(metadata.len()) } else { None };
         Ok(Path {
             path_string,
-            path_type
+            path_type,
+            size,
         })
     }).collect::<Result<Vec<Path>, String>>()
 }

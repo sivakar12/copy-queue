@@ -332,6 +332,7 @@ checksum = "6245d59a3e82a7fc217c5828a6692dbc6dfb63a0c8c90495621f7b9d79704a0e"
 name = "copy-queue"
 version = "0.1.0"
 dependencies = [
+ "mountpoints",
  "serde",
  "serde_json",
  "tauri",
@@ -1477,6 +1478,16 @@ checksum = "e7810e0be55b428ada41041c41f32c9f1a42817901b4ccf45fa3d4b6561e74c7"
 dependencies = [
  "adler",
  "simd-adler32",
+]
+
+[[package]]
+name = "mountpoints"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3090e3ea5226b07cedd89a57c735d3ed0374a84236a85529a1d8bfec98eb8ec5"
+dependencies = [
+ "libc",
+ "winapi",
 ]
 
 [[package]]

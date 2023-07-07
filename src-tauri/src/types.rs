@@ -13,6 +13,7 @@ pub enum PathType {
 pub struct Path {
     pub path_string: String,
     pub path_type: PathType, 
+    pub size: Option<u64>,
 }
 
 #[derive(Debug, Serialize, Clone, PartialEq)]
