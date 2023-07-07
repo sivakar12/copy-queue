@@ -33,7 +33,7 @@ export default function({ item, onCancel }: QueueItemProps ) {
             
             <ProgressBar progress={progress} />
 
-            <div className="flex justify-between">
+            <div className="flex justify-between p-2">
                 <Fraction numerator={item.bytesCopied || 0} denominator={item.totalBytes || 0} type="bytes" />
                 <Fraction numerator={item.filesCopied || 0} denominator={item.totalFiles || 0} type="files" />
             </div>

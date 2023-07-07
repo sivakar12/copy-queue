@@ -3,6 +3,7 @@ import { Operation, OperationType } from "../../types";
 import ProgressBar from "./ProgressBar";
 import GreenTickButton from "../common/GreenTickButton";
 import { Fraction, FractionCompact} from "./Fraction";
+import { DropdownClosed, DropdownOpen } from "../common/DropdownToggles";
 
 function OperationTypeBadge({ operationType } : {operationType: OperationType}) {
     let stringForm;
@@ -69,11 +70,14 @@ type OperationsSummaryToggleProps = {
 }
 
 function OperationsSummaryToggle({ operationsCount, onClick, showOperations } : OperationsSummaryToggleProps) {
-    const prefixSymbol = showOperations ? '🔽' : '▶️';
-    const text = `${prefixSymbol} ${operationsCount} ${operationsCount == 1 ? 'operation' : 'operations'}`;
+    const Symbol = showOperations ? DropdownOpen : DropdownClosed
+    const text = `${operationsCount} ${operationsCount == 1 ? 'operation' : 'operations'}`;
     return (
-        <div className="text-sm font-semibold text-gray-700 dark:text-gray-200 py-1" onClick={onClick}>
-            {text}
+        <div className="flex items-center" onClick={onClick}>
+            <Symbol/>
+            <div className="text-sm font-semibold text-gray-700 dark:text-gray-200 py-1">
+                {text}
+            </div>
         </div>
     )
 }
@@ -82,7 +86,7 @@ export function OperationList({ count, children } : { count: number, children: R
     const [showOperations, setShowOperations] = useState(false);
     const handleOnClick = () => setShowOperations(!showOperations);
     return (
-        <div className="dark:bg-gray-600 rounded-md p-1 my-1">
+        <div className="bg-gray-300 dark:bg-gray-600 rounded-md p-1 my-1">
             <OperationsSummaryToggle operationsCount={count} onClick={handleOnClick} showOperations={showOperations}/>
             {showOperations && (<div className="overflow-auto h-[30vh]">{children}</div>)}
         </div>
