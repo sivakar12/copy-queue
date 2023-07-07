@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Operation, OperationType } from "../../types";
 import ProgressBar from "./ProgressBar";
 import GreenTickButton from "../common/GreenTickButton";
+import Fraction from "./Fraction";
 
 function OperationTypeBadge({ operationType } : {operationType: OperationType}) {
     let stringForm;
@@ -42,6 +43,9 @@ export function OperationListItem({ operation } : { operation: Operation }) {
                 <OperationTypeBadge operationType={operation.operationType}/>
                 <OperationFileDisplay pathString={operation.destination.pathString}/>
                 {complete && <GreenTickButton onClick={() => {}}/>}
+                {operation.totalBytes && 
+                    <Fraction numerator={operation.bytesCopied || 0} denominator={operation.totalBytes} type="bytes" />
+                }
             </div>
             
             <ProgressBar progress={progress}/>

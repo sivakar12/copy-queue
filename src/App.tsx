@@ -22,7 +22,7 @@ function App() {
   const [sourcePath, setSourcePath] = useState<Path>(startingPath) // file or folder
   const [destinationPath, setDestinationPath] = useState<Path>(startingPath) // folder
 
-  const [queue, setQueue] = useState<Immutable.Map<string, Operation>>(Immutable.Map());
+  const [queue, setQueue] = useState<QueueType>(Immutable.Map());
 
   const queueRef = useRef(queue);
   useEffect(() => {
@@ -37,30 +37,49 @@ function App() {
     })
   }, [])
 
-  // Listen for copy progress events
-  // Only set inner values not, not the parent's
+  const updateParentOperationProgress = (queue: QueueType, operationId: string) => {
+    // TODO: Clean this up
+    const operation = queue.get(operationId) as Operation
+    const bytes = operation.splitOperations?.entrySeq().map(([_, splitOperation]) => {
+      return splitOperation.bytesCopied || 0
+    }).reduce((a, b) => a + b, 0)
+    const totalBytes = operation.splitOperations?.entrySeq().map(([_, splitOperation]) => {
+      return splitOperation.totalBytes || 0
+    }).reduce((a, b) => a + b, 0)
+    const filesCopied = operation.splitOperations?.entrySeq().map(([_, splitOperation]) => {
+      return splitOperation.finished ? 1 : 0
+    }).reduce((a, b) => a + b, 0)
+    let newQueue = queue.setIn([operationId, 'bytesCopied'], bytes)
+    newQueue = newQueue.setIn([operationId, 'totalBytes'], totalBytes)
+    newQueue = newQueue.setIn([operationId, 'filesCopied'], filesCopied)
+    console.log('new queue', newQueue.toJS())
+    return newQueue
+  }
+
+  const handleProgressData =(copyProgressData: CopyProgress) => {
+
+    const parentOperationId = copyProgressData.operationId.split('-')[0]
+    let newQueue = queueRef.current;
+    const path = [parentOperationId, 'splitOperations', copyProgressData.operationId]
+    newQueue = newQueue.setIn([...path, 'bytesCopied'], copyProgressData.bytesCopied)
+    newQueue = newQueue.setIn([...path, 'totalBytes'], copyProgressData.totalBytes)
+    if (copyProgressData.copyProgressType === CopyProgressType.Complete) {
+      newQueue = newQueue.setIn([...path, 'finished'], true)
+    }
+    
+    newQueue = updateParentOperationProgress(newQueue, parentOperationId)
+    setQueue(newQueue)
+  
+    if (copyProgressData.copyProgressType === CopyProgressType.Complete) {
+      runOneOperationFromQueue()
+    }
+  }
+
   useEffect(() => {
     const unlisten = listen<CopyProgress>('file-copy-progress', (data) => {
       const copyProgrssData = data.payload;
       console.log('copy progress data', copyProgrssData)
-      
-      // setQueue(queue => {
-        const parentOperationId = copyProgrssData.operationId.split('-')[0]
-        const path = [parentOperationId, 'splitOperations', copyProgrssData.operationId]
-        let newQueue = queueRef.current.setIn([...path, 'bytesCopied'], copyProgrssData.bytesCopied)
-        newQueue = newQueue.setIn([...path, 'totalBytes'], copyProgrssData.totalBytes)
-        if (copyProgrssData.copyProgressType === CopyProgressType.Complete) {
-          newQueue = newQueue.setIn([...path, 'finished'], true)
-        }
-        console.log('path for update', path)
-        console.log('new queue', newQueue.toJS())
-        setQueue(newQueue)
-        // return newQueue
-      // })
-      
-      if (copyProgrssData.copyProgressType === CopyProgressType.Complete) {
-        runOneOperationFromQueue()
-      }
+      handleProgressData(copyProgrssData)
     })
     return () => { unlisten.then(u => u()) }
   }, [])
@@ -76,10 +95,14 @@ function App() {
       isAtomic: true,     // TODO: This is for testing only
     }
     let newQueue = queue.set(newOperation.id, newOperation)
+
     getSplitOperations(newOperation).then((splitOperations) => {
-      console.log(splitOperations)
       const splitOperationsMap = Immutable.Map(splitOperations.map((splitOperation) => [splitOperation.id, splitOperation]))
       newQueue = newQueue.setIn([newOperation.id, 'splitOperations'], splitOperationsMap)
+      const totalFiles = splitOperations.length
+      newQueue = newQueue.setIn([newOperation.id, 'totalFiles'], totalFiles)
+      newQueue = newQueue.setIn([newOperation.id, 'filesCopied'], 0)
+      newQueue = updateParentOperationProgress(newQueue, newOperation.id)
       setQueue(newQueue)
     })
   }

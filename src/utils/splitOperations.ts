@@ -51,7 +51,9 @@ export async function getSplitOperations(operation: Operation): Promise<Operatio
                 pathType: PathType.File
               },
               operationType: OperationType.Copy,
-              isAtomic: true
+              isAtomic: true,
+              bytesCopied: 0,
+              totalBytes: treeItem.size
             }
           }
           else {

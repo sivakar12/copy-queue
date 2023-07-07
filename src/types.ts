@@ -5,8 +5,9 @@ export enum PathType {
   File = "file"
 }
 export type Path = {
-  pathString: string;
-  pathType: PathType
+  pathString: string,
+  pathType: PathType,
+  size?: number
 }
 
 export enum CopyProgressType {
