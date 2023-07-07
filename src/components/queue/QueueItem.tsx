@@ -2,7 +2,7 @@ import { Operation } from '../../types';
 import PathDisplay from './PathDisplay';
 import ProgressBar from './ProgressBar';
 import { OperationList, OperationListItem } from './OperationsList';
-import Fraction from './Fraction';
+import { Fraction } from './Fraction';
 
 type QueueItemProps = {
     item: Operation;

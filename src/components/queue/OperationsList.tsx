@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Operation, OperationType } from "../../types";
 import ProgressBar from "./ProgressBar";
 import GreenTickButton from "../common/GreenTickButton";
-import Fraction from "./Fraction";
+import { Fraction, FractionCompact} from "./Fraction";
 
 function OperationTypeBadge({ operationType } : {operationType: OperationType}) {
     let stringForm;
@@ -19,7 +19,7 @@ function OperationTypeBadge({ operationType } : {operationType: OperationType}) 
     }
 
     return (
-        <div className="flex basis-0 overflow-visible p-1 m-1 text-xs font-extrabold uppercase rounded-md bg-gray-400 dark:bg-gray-400">
+        <div className="flex flex-1 overflow-visible p-1 m-1 text-xs font-extrabold uppercase rounded-md bg-gray-400 dark:bg-gray-400">
             {stringForm}
         </div>
     )
@@ -39,16 +39,25 @@ export function OperationListItem({ operation } : { operation: Operation }) {
     const complete = operation.bytesCopied && operation.bytesCopied == operation.totalBytes;
     return (
         <div className="my-1 flex flex-col items-stretch">
-            <div className="flex items-center text-xs">
+            <div className="flex items-between items-center text-xs">
                 <OperationTypeBadge operationType={operation.operationType}/>
-                <OperationFileDisplay pathString={operation.destination.pathString}/>
-                {complete && <GreenTickButton onClick={() => {}}/>}
-                {operation.totalBytes && 
-                    <Fraction numerator={operation.bytesCopied || 0} denominator={operation.totalBytes} type="bytes" />
-                }
+                <div className="flex flex-col">
+                    <OperationFileDisplay pathString={operation.destination.pathString}/>
+                    <div className="self-end">
+                        {operation.operationType == OperationType.Copy && 
+                            <FractionCompact 
+                                numerator={operation.bytesCopied || 0} 
+                                denominator={operation.totalBytes || 0} 
+                                type="bytes" 
+                            />
+                        }
+                    </div>
+                </div>
+                {complete == true && <GreenTickButton onClick={() => {}}/>}
             </div>
-            
-            <ProgressBar progress={progress}/>
+            {operation.operationType == OperationType.Copy && 
+                <ProgressBar progress={progress}/>
+            }
         </div>
     )
 }
