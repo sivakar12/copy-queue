@@ -7,7 +7,7 @@ type PickerListProps = {
 
 export function PickerList({ children }: PickerListProps) {
     return (
-        <div className="overflow-auto">
+        <div className="overflow-auto h-full">
             {children}
         </div>
     )

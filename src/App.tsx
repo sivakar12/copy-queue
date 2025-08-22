@@ -139,15 +139,18 @@ function App() {
   }
 
   return (
-    <div className="container mx-auto">
-      <div className="grid grid-cols-2 grid-rows-2 grid-gap-2">
-        <div className="">
+    <div className="container mx-auto h-screen flex p-4 gap-4">
+      {/* First Column - Pickers and Add Button */}
+      <div className="w-1/2 h-full flex flex-col space-y-4">
+        <div className="min-h-0 flex-1">
           <Picker
             onChange={setSourcePath}
             label="Source"
             currentPath={sourcePath}
             foldersOnly={false}
           />
+        </div>
+        <div className="min-h-0 flex-1">
           <Picker
             onChange={setDestinationPath}
             label="Destination"
@@ -155,17 +158,21 @@ function App() {
             foldersOnly={true}
           />
         </div>
-        <div className="">
+        <div className="flex justify-center">
+          <Button onClick={handleAdd} label='Add'/>
+        </div>
+      </div>
+      
+      {/* Second Column - Queue and Control Buttons */}
+      <div className="w-1/2 h-full flex flex-col">
+        <div className="flex-1">
           <Queue
             queue={queue}
           />
         </div>
-        <div className="self-right">
-          <Button onClick={handleAdd} label='Add'/>
-        </div>
-        <div className="">
-            <Button label="Start" onClick={handleStart}/>
-            <Button label="Clear" onClick={() => {setQueue(Immutable.Map())}}/>
+        <div className="flex justify-center space-x-4 pt-4">
+          <Button label="Start" onClick={handleStart}/>
+          <Button label="Clear" onClick={() => {setQueue(Immutable.Map())}}/>
         </div>
       </div>
     </div>

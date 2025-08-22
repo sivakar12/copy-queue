@@ -103,10 +103,10 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
     }
 
     return (
-        <div className="flex flex-col h-[40vh] items-stretch m-2 p-2 bg-gray-100 dark:bg-gray-800 dark:text-white rounded-md opacity-75">
+        <div className="flex flex-col h-full items-stretch bg-gray-100 dark:bg-gray-800 dark:text-white rounded-md opacity-75 overflow-hidden">
             
             {/* Top bar with label and menu items */}
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center p-2 flex-shrink-0">
                 <Title text={label} />
                 <div className="flex gap-0">
                     <ToggleButton label="Drives" onClick={handleDrivesToggle} isOn={pickerView == PickerView.DRIVES} />
@@ -124,60 +124,61 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
             </div>
 
             {/* Path and back button */}
-            <div className="flex justify-start m-1 gap-1 items-stretch">
+            <div className="flex justify-start px-2 gap-1 items-stretch flex-shrink-0">
                 <BackButton onClick={handleBack} />
                 <PathDisplay path={currentPath.pathString} />
             </div>
 
             {/* List of items from selected path, drives or favorites */}
+            <div className="flex-1 px-2 pb-2 min-h-0">
+                {pickerView == PickerView.FOLDER_CONTENT && 
+                    <PickerList>
+                        {items.filter(item => !foldersOnly || foldersOnly && item.pathType == PathType.Folder).map(item => {
 
-            {pickerView == PickerView.FOLDER_CONTENT && 
-                <PickerList>
-                    {items.filter(item => !foldersOnly || foldersOnly && item.pathType == PathType.Folder).map(item => {
+                            const icon = item.pathType == PathType.Folder ? '📁' : '📄'
+                            const text = icon + ' ' + item.pathString.split('/').pop()
+                            return (
+                                <PickerListItem 
+                                    key={item.pathString} 
+                                    text={text} 
+                                    selected={item.pathString === currentPath.pathString} 
+                                    onClick={() => onChange(item)}
+                                    showRemoveButton={false}
+                                />
+                            )
+                        })}
+                    </PickerList>
+                }
 
-                        const icon = item.pathType == PathType.Folder ? '📁' : '📄'
-                        const text = icon + ' ' + item.pathString.split('/').pop()
-                        return (
-                            <PickerListItem 
-                                key={item.pathString} 
-                                text={text} 
-                                selected={item.pathString === currentPath.pathString} 
-                                onClick={() => onChange(item)}
+                {pickerView == PickerView.FAVORITES && (
+                    <PickerList>
+                        {favorites.map(f => 
+                            <PickerListItem
+                                key={f.pathString}
+                                text={f.pathString}
+                                selected={false}
+                                showRemoveButton={true}
+                                onRemove={() => handleRemoveFavorite(f)}
+                                onClick={() => goToPath(f)}
+                                />
+                        )}
+                    </PickerList>
+                )}
+
+                {pickerView == PickerView.DRIVES && (
+                    <PickerList>
+                        {drives.map(drive => 
+                            <PickerListItem
+                                key={drive.pathString}
+                                text={drive.pathString}
+                                selected={false}
                                 showRemoveButton={false}
-                            />
-                        )
-                    })}
-                </PickerList>
-            }
-
-            {pickerView == PickerView.FAVORITES && (
-                <PickerList>
-                    {favorites.map(f => 
-                        <PickerListItem
-                            key={f.pathString}
-                            text={f.pathString}
-                            selected={false}
-                            showRemoveButton={true}
-                            onRemove={() => handleRemoveFavorite(f)}
-                            onClick={() => goToPath(f)}
-                            />
-                    )}
-                </PickerList>
-            )}
-
-            {pickerView == PickerView.DRIVES && (
-                <PickerList>
-                    {drives.map(drive => 
-                        <PickerListItem
-                            key={drive.pathString}
-                            text={drive.pathString}
-                            selected={false}
-                            showRemoveButton={false}
-                            onClick={() => goToPath(drive)}
-                            />
-                    )}
-                </PickerList>
-            )}
+                                onClick={() => goToPath(drive)}
+                                />
+                        )}
+                    </PickerList>
+                )}
+            </div>
         </div>
     );
 }
