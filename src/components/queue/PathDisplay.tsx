@@ -4,28 +4,25 @@ type PathDisplayPropType = {
     allowRename?: boolean;
 }
 
-function PathLabel({ text }: { text: string }) {
-    return (
-        <div className=" text-gray-600 dark:text-gray-300 font-light self-left">
-            {text}
-        </div>
-    )
-}
-
-function PathValue({ text }: { text: string }) {
-    return (
-        <div className="text-gray-800 dark:text-gray-200 font-semibold self-right flex-grow break-all">
-            {text}
-        </div>
-    )
-}
 export default function Path({ source, destination }: PathDisplayPropType) {
     return (
-        <div className="grid gap-2 grid-cols-[auto,1fr] px-4 py-2 rounded-3xl">
-            <PathLabel text="Source" />
-            <PathValue text={source} />
-            <PathLabel text="Destination" />
-            <PathValue text={destination} />
+        <div className="px-4 py-2 rounded-3xl space-y-3">
+            <div className="space-y-1">
+                <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
+                    Source
+                </div>
+                <div className="text-gray-800 dark:text-gray-200 font-medium break-all">
+                    {source}
+                </div>
+            </div>
+            <div className="space-y-1">
+                <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
+                    Destination
+                </div>
+                <div className="text-gray-800 dark:text-gray-200 font-medium break-all">
+                    {destination}
+                </div>
+            </div>
         </div>
     )
 }
