@@ -23,7 +23,7 @@ export default function({ item, onCancel }: QueueItemProps ) {
       }
     return (
         
-        <div className="flex flex-col p-2 my-1 rounded-md bg-gray-200 dark:bg-gray-700">
+        <div className="flex flex-col px-4 py-2 my-1 rounded-3xl bg-gray-200 dark:bg-gray-700">
             <div className="flex flex-row justify-stretch">     
                 <PathDisplay 
                     source={item.source.pathString}

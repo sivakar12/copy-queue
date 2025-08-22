@@ -103,10 +103,10 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
     }
 
     return (
-        <div className="flex flex-col h-full items-stretch bg-gray-100 dark:bg-gray-800 dark:text-white rounded-md opacity-75 overflow-hidden">
+        <div className="flex flex-col h-full items-stretch bg-gray-100 dark:bg-gray-800 dark:text-white rounded-3xl opacity-75 overflow-hidden">
             
             {/* Top bar with label and menu items */}
-            <div className="flex justify-between items-center p-2 flex-shrink-0">
+            <div className="flex justify-between items-center px-4 py-2 flex-shrink-0">
                 <Title text={label} />
                 <div className="flex gap-0">
                     <ToggleButton label="Drives" onClick={handleDrivesToggle} isOn={pickerView == PickerView.DRIVES} />
@@ -124,13 +124,13 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
             </div>
 
             {/* Path and back button */}
-            <div className="flex justify-start px-2 gap-1 items-stretch flex-shrink-0">
+            <div className="flex justify-start px-4 gap-1 items-stretch flex-shrink-0">
                 <BackButton onClick={handleBack} />
                 <PathDisplay path={currentPath.pathString} />
             </div>
 
             {/* List of items from selected path, drives or favorites */}
-            <div className="flex-1 px-2 pb-2 min-h-0">
+            <div className="flex-1 px-4 pb-2 min-h-0">
                 {pickerView == PickerView.FOLDER_CONTENT && 
                     <PickerList>
                         {items.filter(item => !foldersOnly || foldersOnly && item.pathType == PathType.Folder).map(item => {

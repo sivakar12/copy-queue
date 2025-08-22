@@ -20,7 +20,7 @@ function OperationTypeBadge({ operationType } : {operationType: OperationType}) 
     }
 
     return (
-        <div className="flex flex-1 overflow-visible p-1 m-1 text-xs font-extrabold uppercase rounded-md bg-gray-400 dark:bg-gray-400">
+                    <div className="flex flex-1 overflow-visible px-3 py-1 m-1 text-xs font-extrabold uppercase rounded-3xl bg-gray-400 dark:bg-gray-400">
             {stringForm}
         </div>
     )
@@ -73,7 +73,7 @@ function OperationsSummaryToggle({ operationsCount, onClick, showOperations } : 
     const Symbol = showOperations ? DropdownOpen : DropdownClosed
     const text = `${operationsCount} ${operationsCount == 1 ? 'operation' : 'operations'}`;
     return (
-        <div className="flex items-center" onClick={onClick}>
+        <div className="flex items-center cursor-pointer hover:opacity-80 transition-opacity" onClick={onClick}>
             <Symbol/>
             <div className="text-sm font-semibold text-gray-700 dark:text-gray-200 py-1">
                 {text}
@@ -86,7 +86,7 @@ export function OperationList({ count, children } : { count: number, children: R
     const [showOperations, setShowOperations] = useState(false);
     const handleOnClick = () => setShowOperations(!showOperations);
     return (
-        <div className="bg-gray-300 dark:bg-gray-600 rounded-md p-1 my-1">
+                    <div className="bg-gray-300 dark:bg-gray-600 rounded-3xl px-3 py-1 my-1">
             <OperationsSummaryToggle operationsCount={count} onClick={handleOnClick} showOperations={showOperations}/>
             {showOperations && (<div className="overflow-auto h-[30vh]">{children}</div>)}
         </div>

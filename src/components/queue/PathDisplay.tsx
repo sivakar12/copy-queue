@@ -21,7 +21,7 @@ function PathValue({ text }: { text: string }) {
 }
 export default function Path({ source, destination }: PathDisplayPropType) {
     return (
-        <div className="grid gap-2 grid-cols-[auto,1fr] p-2 rounded-md">
+        <div className="grid gap-2 grid-cols-[auto,1fr] px-4 py-2 rounded-3xl">
             <PathLabel text="Source" />
             <PathValue text={source} />
             <PathLabel text="Destination" />

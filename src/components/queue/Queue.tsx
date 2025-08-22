@@ -4,8 +4,8 @@ import QueueItem from './QueueItem';
 
 export default function Queue({ queue }: { queue: QueueType }) {
     return (
-        <div className="bg-gray-100 dark:bg-gray-800 dark:text-white opacity-75 h-full rounded-md overflow-auto">
-            <div className="p-2">
+        <div className="bg-gray-100 dark:bg-gray-800 dark:text-white opacity-75 h-full rounded-3xl overflow-auto">
+            <div className="px-4 py-2">
                 <Title text="Queue" />
                 <div className="text-sm text-gray-700 dark:text-gray-400">
                     {queue.size} { queue.size == 1 ? 'item' : 'items'} in queue
