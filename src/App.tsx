@@ -158,8 +158,10 @@ function App() {
             foldersOnly={true}
           />
         </div>
-        <div className="flex justify-center">
-          <Button onClick={handleAdd} label='Add'/>
+        <div className="flex justify-center space-x-2">
+          <Button onClick={handleAdd} label='Copy' className="bg-emerald-700 hover:bg-emerald-800 text-white opacity-80"/>
+          <Button onClick={() => {}} label='Move' className="bg-sky-700 hover:bg-sky-800 text-white opacity-80"/>
+          <Button onClick={() => {}} label='Delete' className="bg-rose-700 hover:bg-rose-800 text-white opacity-80"/>
         </div>
       </div>
       
@@ -171,8 +173,8 @@ function App() {
           />
         </div>
         <div className="flex justify-center space-x-4 pt-4">
-          <Button label="Start" onClick={handleStart}/>
-          <Button label="Clear" onClick={() => {setQueue(Immutable.Map())}}/>
+          <Button label="Start" onClick={handleStart} className="bg-indigo-700 hover:bg-indigo-800 text-white opacity-80"/>
+          <Button label="Clear" onClick={() => {setQueue(Immutable.Map())}} className="bg-amber-800 hover:bg-amber-900 text-white opacity-80"/>
         </div>
       </div>
     </div>

@@ -1,13 +1,13 @@
-import { invoke } from '@tauri-apps/api/tauri'
+import { invoke } from '@tauri-apps/api/tauri';
 import { useEffect, useState } from 'react';
 import useFavorites from '../../utils/useFavorites';
 import useDrives from '../../utils/useDrives';
 import { PickerMenu, PickerMenuContainer, PickerMenuItem } from './PickerDropDownMenu';
 import { PickerList, PickerListItem } from './PickerList';
 import ToggleButton from './ToggleButton';
-import BackButton from './BackButton';
-import PathDisplay from './PathDisplay';
-import Title from '../common/Title';
+
+import { PathDisplay } from '../common/PathDisplay';
+import { BlueLabel } from '../common/BlueLabel';
 import { Path, PathType } from '../../types';
 
 
@@ -107,7 +107,7 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
             
             {/* Top bar with label and menu items */}
             <div className="flex justify-between items-center px-4 py-2 flex-shrink-0">
-                <Title text={label} />
+                <BlueLabel text={label} variant="big" />
                 <div className="flex gap-0">
                     <ToggleButton label="Drives" onClick={handleDrivesToggle} isOn={pickerView == PickerView.DRIVES} />
                     <ToggleButton label="Favorites" onClick={handleFavoritesToggle} isOn={pickerView == PickerView.FAVORITES} />
@@ -123,10 +123,16 @@ export default function Picker({ onChange, foldersOnly, currentPath, label }: Pi
                 </div>
             </div>
 
-            {/* Path and back button */}
-            <div className="flex justify-start px-4 gap-1 items-stretch flex-shrink-0">
-                <BackButton onClick={handleBack} />
-                <PathDisplay path={currentPath.pathString} />
+            {/* Path display */}
+            <div className="flex justify-start px-4 items-center flex-shrink-0 my-2">
+                <PathDisplay 
+                    path={currentPath.pathString} 
+                    navigable={true}
+                    onPathClick={(newPath) => {
+                        const pathObj = { pathString: newPath, pathType: PathType.Folder };
+                        goToPath(pathObj);
+                    }}
+                />
             </div>
 
             {/* List of items from selected path, drives or favorites */}
